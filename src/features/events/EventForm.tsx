@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Clock, Image, Loader2 } from 'lucide-react'
+import { AlertCircle, Image, Loader2 } from 'lucide-react'
 import { cn } from '../../lib/utils'
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog'
 import { UpgradeModal } from '../../components/ui/UpgradeModal'

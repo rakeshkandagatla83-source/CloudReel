@@ -18,6 +18,7 @@ import {
   Monitor,
   Mail,
   Lock,
+  Check,
 } from 'lucide-react'
 import { isAxiosError } from 'axios'
 import { cn } from '../lib/utils'
