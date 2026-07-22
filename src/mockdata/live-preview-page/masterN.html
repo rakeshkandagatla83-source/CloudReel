@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>TRTC Production Viewer</title>
+  <link rel="stylesheet" href="masterN.css">
+
+  <style>
+    /* html,
+    body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      overflow: hidden
+    } */
+
+    /* BACKGROUND */
+    #background {
+      position: absolute;
+      inset: 0;
+      z-index: 0
+    }
+
+    #background img,
+    #background video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      overflow: hidden;
+    }
+
+    /* L-BAND */
+    /* #lband {
+      position: absolute;
+      z-index: 5;
+      display: none;
+      overflow: hidden
+    }
+
+    #lband img,
+    #lband video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover
+    } */
+
+    /* VIDEO ROOT */
+    #video-root {
+      position: absolute;
+      inset: 0;
+      z-index: 10
+    }
+
+    /* STAGE */
+    #stage {
+      position: relative;
+      width: 100%;
+      height: 100%
+    }
+
+
+    /* SLOT */
+    .slot {
+      position: absolute;
+      background: black;
+      box-sizing: content-box;
+      overflow: hidden;
+    }
+
+    /* VIDEO */
+    .video {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* FALLBACK IMAGE */
+    .bg-image {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      display: none;
+    }
+
+    /* CAPTION */
+    .caption {
+      position: absolute;
+      display: none;
+      padding: 0px 12px;
+      font-family: Arial;
+      background: rgba(0, 0, 0, .65);
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    .caption-text {
+      opacity: 0
+    }
+
+    .fade-in {
+      animation: fadeIn .4s forwards
+    }
+
+    .fade-out {
+      animation: fadeOut .4s forwards
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    @keyframes fadeOut {
+      from {
+        opacity: 1
+      }
+
+      to {
+        opacity: 0
+      }
+    }
+  </style>
+  <!-- 
+  /* ============================= */
+  /* VIDEO TRANSFORM SUPPORT */
+  /* ============================= */
+  .video > video,
+  .video > canvas {
+  width: 100%;
+  height: 100%;
+  transform-origin: center center;
+  } -->
+
+</head>
+
+<body>
+  <div id="scaleWrapper">
+    <div class="parent-wrap" id="img-background" style="padding: 0">
+      <!--Main container where vod and bg image will display-->
+      <div id="background"></div>
+      <!-- <div id="lband"></div> -->
+      <!-- <div id="video-root">
+        <div id="stage"></div>
+      </div> -->
+      <div id="stage"></div>
+      <!--Top band-->
+      <div class="" id="top-news-grid">
+        <div class="news-top" id="header-news">
+          <h2 class="hide top-desg"></h2>
+          <h2 class="show top-desg"></h2>
+        </div>
+        <video oncanplay="this.play()" onloadedmetadata="this.muted = true" autoplay loop id="header-video" muted
+          playsinline></video>
+
+        <img src="" id="header-bg-png" style="display: none;" />
+      </div>
+      <!--Breaking news-->
+      <div class="main-breaking-section container-fluid">
+        <div class="breaking-news" id="breaking-news-div">
+          <div class="video-frame" id="breaking-news-grid">
+            <video oncanplay="this.play()" onloadedmetadata="this.muted = true" autoplay loop src=""
+              class="breaking-video" id="video-grid-breaking" style="display: none;"></video>
+            <img src="" id="breaking-news-png" />
+            <div class="breaking-news-text" id="breaking-news-data"></div>
+          </div>
+        </div>
+      </div>
+      <!--Breaking news-->
+      <!--Top Band-->
+      <section class="bottom-news">
+
+
+
+        <!--Date & Time -->
+        <div class="timer" id="timer-div">
+
+          <div class="time-div" id="time-div">
+            <img src="" class="new-date-img" id="time-img" />
+            <video oncanplay="this.play()" onloadedmetadata="this.muted = true" autoplay loop src="" id="time-bg-vid"
+              style="display: none;"></video>
+            <p id="time-txt" class="time-details clock time-tag"></p>
+          </div>
+          <div class="date-div" id="date-div">
+            <img src="" class="new-time-img" id="date-img" />
+            <video oncanplay="this.play()" onloadedmetadata="this.muted = true" autoplay loop src="" id="date-bg-vid"
+              style="display: none;"></video>
+            <div id="date-txt" class="date-details date text-center est-date"></div>
+          </div>
+
+        </div>
+        <!--Date band-->
+        <!--ticker band-->
+        <div id="ticker-band">
+          <img id="ticker-img" />
+          <video id="lower-new-ticker"></video>
+
+          <div class="ticker-container" id="ticker-news-grid">
+            <div class="ticker-wrap">
+              <div class="ticker-text ticker__item" id="marquee-val"></div>
+            </div>
+          </div>
+        </div>
+        <!--ticker band below lower band-->
+        <!--Bottom ticker-->
+        <div class="bottom-new-ticker" id="bottom-ticker">
+          <img src="" id="bottom_ticker_img" />
+          <video oncanplay="this.play()" onloadedmetadata="this.muted = true" autoplay loop id="bottom-ticker-vid"
+            src="" style="display: none;"></video>
+          <p class="new-animation flip-text bottom-ticker-news" id="bottom_ticker_text">
+            <span class="text-in"> </span>
+            <span class="text-out"> </span>
+          </p>
+        </div>
+        <!--Bottom ticker-->
+        <div class="bottom-grid-india-tv" id="bottom-news-grid">
+          <div class="news-bottom" id="bottom-news">
+            <h2 class="bottom-desg hide"></h2>
+            <h2 class="bottom-desg show"></h2>
+          </div>
+
+          <video oncanplay="this.play()" onloadedmetadata="this.muted = true" autoplay loop id="bottom-video" src=""
+            style="display: none;"></video>
+          <img src="" id="bottom-bg-png" />
+        </div>
+      </section>
+      <!--Live band-->
+      <div class="location_india_tv" id="loc-div">
+        <div class="loc-india_tv" id="loc-news">
+          <h2 class="location_h2"></h2>
+        </div>
+        <video oncanplay="this.play()" onloadedmetadata="this.muted = true" autoplay loop id="location-video" src=""
+          style="display: none;"></video>
+        <img src="" id="location-bg-png" />
+      </div>
+      <!--LIve band-->
+      <!--logo band-->
+      <div class="position-abs-img" id="vod-logo-div">
+        <video oncanplay="this.play()" onloadedmetadata="this.muted = true" autoplay loop src="" id="Vod-logo"
+          style="display: none;"></video>
+        <img src="" id="logo-bg-png" />
+        <!-- </div> -->
+      </div>
+      <!--Logo band-->
+    </div>
+    <!--L Band On main vod container shold shrink-->
+    <div class="lBanddiv" id="lband-div" style="display: none;">
+      <img src="" id="lbandimg" class="lbandprop">
+      <video src="" id="lbandvod" autoplay muted>
+    </div>
+    <!--L Band On main vod container shold shrink code End-->
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
+
+
+  <script src="./trtc.js"></script>
+  <script src="./viewerN.js"></script>
+  <script src="./generateTestUserSig.js"></script>
+  <script src="./lib-generate-test-usersig.min.js"></script>
+  <script src="./sldp-v3.1.2.min.js"></script>
+</body>
+
+</html>

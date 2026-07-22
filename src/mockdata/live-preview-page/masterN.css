@@ -1,0 +1,764 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    background: black;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    line-height: 1.5;
+    user-select: none;
+}
+
+#scaleWrapper {
+    width: 1920px;
+    height: 1080px;
+    transform-origin: top left;
+    overflow: hidden;
+    position: relative;
+}
+
+.parent-wrap {
+    position: relative;
+    height: 100vh;
+    padding: 0 0 19vh 13.5vw;
+    overflow: hidden;
+    transition: all 0.7s linear;
+    z-index: 9;
+    background: #000;
+}
+
+
+.lBanddiv {
+    right: 100%;
+    top: 0px;
+}
+
+.lbandprop,
+.lBanddiv {
+    position: fixed;
+    /* z-index: 99999; */
+    z-index: -10 !important;
+}
+
+.lbandprop {
+    width: 100%;
+}
+
+
+/* ---------- Top band ---------- */
+#top-news-grid {
+    display: flex;
+    position: absolute;
+    width: 90%;
+    top: 30px;
+    z-index: 999;
+    justify-content: center;
+    align-items: center;
+    left: 0px;
+    margin-top: 10px;
+    height: 120px;
+    width: 90%;
+}
+
+
+.news-top {
+    background: var(--header-bgcolor);
+    position: relative;
+    display: flex;
+    align-items: center;
+    /*overflow: hidden;*/
+    flex: 1 0 auto;
+    max-width: 100%;
+    margin-right: auto;
+}
+
+.news-top::after {
+    position: absolute;
+    content: "";
+    height: 100%;
+    width: 50%;
+    background: var(--header-bgcolor);
+    display: inline-block;
+    right: -50%;
+    animation: right-close 3s linear 2.55s infinite;
+    z-index: 2;
+}
+
+.news-top::before {
+    position: absolute;
+    content: "";
+    height: 100%;
+    width: 50%;
+    background: var(--header-bgcolor);
+    display: inline-block;
+    left: -50%;
+    animation: left-close 3s linear 2.55s infinite;
+    z-index: 2;
+}
+
+/* header video/image */
+/* #header-video, */
+#header-bg-png {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+}
+
+
+/* header text */
+#header-news {
+    position: absolute;
+    z-index: 2;
+    color: white;
+    padding: 0 16px;
+    box-sizing: border-box;
+    overflow: hidden;
+    /* obey textLeft/textTop from config */
+}
+
+#header-news h2 {
+    width: 100%;
+    margin: 0;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    text-align: left;
+}
+
+.top-desg.hide,
+.bottom-desg.hide,
+.breaking-news-desg.hide {
+    display: none;
+    opacity: 0;
+
+}
+
+.h2-desg span.hide {
+    animation: disappear 1s linear;
+    top: -100%;
+}
+
+.rotate-horizontal h2.show {
+    animation: rotateHorizontal 1s linear;
+    transform-origin: center;
+}
+
+.top-desg.show,
+.bottom-desg.show,
+.breaking-news-desg.show {
+    display: flex;
+    color: #fff;
+    text-align: center;
+    z-index: 9;
+    opacity: 1;
+    align-items: center;
+}
+
+.h2-desg span.show {
+    animation: appear 1s linear;
+    top: 18%;
+}
+
+.head-grid .top-desg,
+.bottom-grid .bottom-desg {
+    text-align: center;
+    color: #fff;
+    position: absolute;
+    width: 100%;
+    font-size: 5vh;
+    padding: 0 0.2rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 8.5vh;
+    overflow: hidden;
+    margin: 0;
+}
+
+/* Bottom news*/
+#bottom-news-grid {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 120px;
+    z-index: 50;
+    pointer-events: none;
+    overflow: visible;
+}
+
+.news-bottom {
+    /* background: rgb(28, 116, 190); */
+
+    background: var(--bottom-bgcolor);
+    position: relative;
+    display: flex;
+    align-items: center;
+    /*overflow: hidden;*/
+    flex: 1 0 auto;
+    max-width: 100%;
+    /* border-left: 8px solid orange; */
+    margin-right: auto;
+    height: 78px;
+}
+
+.news-bottom::after {
+    position: absolute;
+    content: "";
+    /* height: 100%; */
+    width: 50%;
+    /* background: rgb(28, 116, 190); */
+    background: var(--bottom-bgcolor);
+    display: inline-block;
+    right: -50%;
+    animation: right-close 3s linear 2.55s infinite;
+    z-index: 2;
+}
+
+.news-bottom::before {
+    position: absolute;
+    content: "";
+    /* height: 100%; */
+    width: 50%;
+    /* background: rgb(28, 116, 190); */
+    background: var(--bottom-bgcolor);
+    display: inline-block;
+    left: -50%;
+    animation: left-close 3s linear 2.55s infinite;
+    z-index: 2;
+}
+
+#bottom-news {
+    position: absolute;
+    z-index: 2;
+    color: white;
+    padding: 0;
+    box-sizing: border-box;
+    /* overflow: hidden; */
+}
+
+#bottom-news h2 {
+    width: 100%;
+    margin: 0;
+    text-align: left;
+}
+
+.bottom-news {
+    height: 24%;
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    left: 0px;
+}
+
+/* Ticker News in below lower band*/
+#ticker-band {
+    position: absolute;
+    left: 0;
+    bottom: -120px;
+    width: 100%;
+    height: 60px;
+    z-index: 40;
+    overflow: visible;
+}
+
+#ticker-news-grid {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+
+.ticker-wrap {
+    width: max-content;
+    white-space: nowrap;
+}
+
+.ticker-text {
+    display: inline-block;
+    padding-left: 0;
+    animation: none;
+}
+
+/* Time related */
+.timer {
+    position: absolute;
+    /* right: -176px; */
+    bottom: 70px;
+    width: 13.5%;
+    left: 79%;
+    z-index: 999;
+}
+
+/* time based div*/
+.time-div {
+    position: relative;
+    top: -169px;
+}
+
+/* image of time*/
+.new-date-img {
+    position: absolute;
+}
+
+/* time showing alignment */
+#time-img {
+    width: 111%;
+    position: absolute;
+    top: 0px;
+    left: 2px;
+}
+
+/* id related to time of video tag*/
+#time-bg-vid {
+    position: absolute;
+    width: 113%;
+    top: 0;
+    left: 0;
+}
+
+/* Time details*/
+.time-tag {
+    color: #fff;
+    font-weight: 600;
+    font-size: 36px;
+    text-align: center;
+    padding-top: 6px;
+    position: absolute;
+    top: -7px;
+    left: 0px;
+    width: 111%;
+    z-index: 9;
+    margin-top: 0;
+    margin-bottom: 1rem;
+
+}
+
+/* Date div*/
+.date-div {
+    position: relative;
+    top: -118px;
+}
+
+/* id of image tag for  date*/
+#date-img {
+    width: 111%;
+    position: absolute;
+    top: 0px;
+    left: 2px;
+}
+
+/*video id of date band*/
+#date-bg-vid {
+    position: absolute;
+    width: 113%;
+    top: 3px;
+    left: 0;
+}
+
+/* date layout*/
+.est-date {
+    color: #000;
+    font-weight: 600;
+    font-size: 26px;
+    padding-top: 6px;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 111%;
+    /* color: #fff !important; */
+    text-align: center;
+}
+
+/* LOCATION BAND */
+#loc-div {
+    position: absolute;
+    z-index: 50;
+    pointer-events: none;
+    overflow: visible;
+}
+
+#loc-news {
+    position: absolute;
+    z-index: 2;
+    color: white;
+    padding: 0 8px;
+    box-sizing: border-box;
+    overflow: visible;
+    font-size: 15px;
+    line-height: normal;
+}
+
+/* text show in loaction band*/
+/* .location_h2 {
+    font-size: 15px;
+} */
+
+/* vod logo position main div*/
+.position-abs-img {
+    position: absolute;
+    top: 46px;
+    right: 11px;
+    z-index: 99;
+}
+
+.vod-logo-div {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    z-index: 65;
+}
+
+/* div related to breaking news*/
+.main-breaking-section {
+    padding-left: 80px;
+    display: flex;
+    justify-content: end;
+    gap: 15px;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* breaking news*/
+/* .container-fluid {
+    width: 100%;
+    padding-right: var(--bs-gutter-x, .75rem);
+    margin-right: auto;
+    margin-left: auto;
+} */
+.container-fluid {
+    width: 98%;
+    padding-right: var(--bs-gutter-x, .50rem);
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.breaking-news {
+    width: 50%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 156px;
+    left: 0px;
+}
+
+.breaking-news-text {
+    position: relative;
+    z-index: 99;
+    top: 0px;
+    left: 0px;
+    padding: 0 60px;
+    width: 100%;
+    overflow: hidden;
+}
+
+.breaking-news-desg {
+    text-align: center;
+    color: #fff;
+    position: absolute;
+    width: 100%;
+    font-size: 5vh;
+    padding: 0 0.2rem;
+    /* text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 8.5vh; */
+    overflow: hidden;
+    margin: 0;
+}
+
+.breaking-news-desg {
+    text-align: center;
+    color: #fff;
+    position: absolute;
+    width: 100%;
+    font-size: 5vh;
+    padding: 0 0.2rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 8.5vh;
+    overflow: hidden;
+    margin: 0;
+}
+
+
+.breaking-news-desg {
+    white-space: normal;
+    text-overflow: initial;
+    line-height: 1.2;
+    position: static;
+}
+
+.breaking-news-text h2 {
+    color: #fff;
+    font-size: 40px;
+    text-shadow: 1px 1px 2px black;
+}
+
+.breaking-news-desg.show {
+    display: block;
+    color: #fff;
+    text-align: center;
+    z-index: 9;
+}
+
+.breaking-news-desg.hide {
+    display: none;
+}
+
+.video-frame {
+    height: 676px;
+    overflow: visible;
+    width: 912px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 0;
+    top: 0px;
+    left: 0px;
+}
+
+/* breakingf news image*/
+/* #breaking-news-png {
+    position: absolute;
+    width: 100%;
+    top: 0px;
+    left: 0px;
+} */
+#breaking-news-png, .breaking-video {
+    position: absolute;
+    width: 90%;
+    top: 0px;
+    left: 0px;
+}
+
+.slide-up h2.show {
+    animation: textIn 0.5s ease;
+}
+
+.slide-up h2.hide {
+    animation: textOut 0.5s ease;
+}
+
+.light-speed-in-bottom h2.show {
+    animation: lightSpeedInBottom 1s ease-out;
+    transform-origin: center top;
+}
+
+.flip-in-x h2.show {
+    animation: flipInX 0.9s ease-out;
+    transform-origin: center center;
+    backface-visibility: hidden;
+}
+
+/* Typewriter animation for top/bottom band text */
+#header-news.typed-out h2.show,
+#bottom-news.typed-out h2.show,
+.typed-out h2.show {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: clip;
+    width: 100%;
+    clip-path: inset(0 100% 0 0);
+    animation: typingText 2s steps(30, end) forwards;
+}
+
+/* Bottom band needs multiline support when long text arrives. */
+#bottom-news .bottom-desg {
+    white-space: normal;
+    line-height: normal;
+    word-break: break-word;
+    overflow: hidden;
+    text-align: left;
+}
+
+#bottom-news .bottom-desg.show {
+    display: block;
+    text-align: left;
+}
+
+#bottom-news .bottom-desg .svg-div {
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+    margin-right: 12px;
+}
+
+#bottom-news .bottom-desg .svg-div svg,
+#bottom-news .bottom-desg .svg-div img {
+    display: block;
+    max-width: 1.6em;
+    max-height: 1.6em;
+    width: auto;
+    height: auto;
+}
+
+#bottom-news .bottom-desg span {
+    vertical-align: middle;
+}
+
+#bottom-news.typed-out h2.show {
+    white-space: normal;
+    line-height: normal;
+    max-height: 120px;
+    overflow: hidden;
+    animation: typingText 2.2s linear forwards;
+}
+
+#breaking-news-data.typed-out {
+    overflow: hidden;
+}
+
+#breaking-news-data.typed-out .breaking-news-desg.show {
+    display: block;
+    position: static;
+    width: 100%;
+    max-width: 100%;
+    white-space: normal;
+    word-break: break-word;
+    overflow: hidden;
+    text-overflow: clip;
+    line-height: 1.2;
+    clip-path: inset(0 100% 0 0);
+    animation: typingText 2.2s linear forwards;
+}
+
+@keyframes tickerMove {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-100%);
+    }
+}
+
+@keyframes bottomTicker {
+    0% {
+        transform: translateX(100%);
+    }
+
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+@keyframes textIn {
+    0% {
+        transform: translateY(70%);
+    }
+
+    100% {
+        transform: translateY(0%);
+    }
+}
+
+@keyframes textOut {
+    0% {
+        transform: translateY(70%);
+    }
+
+    100% {
+        transform: translateY(0%);
+    }
+}
+
+@keyframes typingText {
+    from {
+        clip-path: inset(0 100% 0 0);
+    }
+
+    to {
+        clip-path: inset(0 0 0 0);
+    }
+}
+
+@keyframes lightSpeedInBottom {
+    0% {
+        opacity: 0;
+        transform: translateY(-18%);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes flipInX {
+    0% {
+        opacity: 0;
+        transform: perspective(700px) rotateX(70deg);
+    }
+
+    60% {
+        opacity: 1;
+        transform: perspective(700px) rotateX(-10deg);
+    }
+
+    100% {
+        opacity: 1;
+        transform: perspective(700px) rotateX(0deg);
+    }
+}
+
+@keyframes rotateHorizontal {
+
+    50% {
+        transform: rotateX(180deg);
+        opacity: 0;
+    }
+
+    75% {
+        opacity: 0;
+    }
+
+    100% {
+        transform: rotateX(360deg);
+    }
+}
+
+@keyframes rotH {
+    from {
+        transform: rotateX(0deg);
+    }
+
+    to {
+        transform: rotateX(360deg);
+    }
+}
+
+@container my-layout (inline-size < 50vw) {
+
+    .head-grid .top-desg,
+    .bottom-grid .bottom-desg,
+    .ticker-wrap .ticker__item,
+    .breaking-news-desg {
+        font-size: 14px;
+    }
+}
+
+#marquee-val {
+    white-space: nowrap;
+    will-change: transform;
+}

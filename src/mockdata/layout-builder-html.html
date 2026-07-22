@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Layout Builder</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',sans-serif;background:#0a0a14;color:#ddd;height:100vh;overflow:hidden;}
+
+/* ── TOAST ── */
+#toast{position:fixed;top:16px;right:16px;z-index:9999;padding:8px 16px;border-radius:8px;font-size:12px;display:none;transition:opacity .3s;}
+#toast.ok{background:#001f10;border:1px solid #00e676;color:#00e676;}
+#toast.err{background:#1f0000;border:1px solid #ff5252;color:#ff5252;}
+
+/* ── SAVE DIALOG ── */
+#saveOverlay{display:none;position:fixed;inset:0;background:#000a;z-index:1000;align-items:center;justify-content:center;}
+#saveOverlay.show{display:flex;}
+.save-modal{background:#16213e;border:1px solid #1a3a6a;border-radius:12px;padding:24px;width:320px;}
+.save-modal h3{color:#00d4ff;margin-bottom:14px;font-size:14px;}
+.save-modal input{width:100%;padding:8px 10px;border-radius:6px;background:#0f3460;color:#fff;border:1px solid #1a4a8a;font-size:12px;margin-bottom:12px;outline:none;}
+.save-modal input:focus{border-color:#00d4ff;}
+.save-modal-btns{display:flex;gap:8px;}
+.save-modal-btns button{flex:1;padding:8px;border-radius:6px;border:none;font-weight:bold;font-size:12px;cursor:pointer;}
+.btn-save{background:#00d4ff;color:#000;}
+.btn-cancel-save{background:#1a3a6a;color:#aaa;}
+
+/* ── VIEWS ── */
+#dashView,#builderView{height:100vh;display:none;flex-direction:column;}
+#dashView.active,#builderView.active{display:flex;}
+
+/* ══════════════════ DASHBOARD ══════════════════ */
+.dash-header{background:#0d0d1a;border-bottom:1px solid #1a3a6a;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.dash-header h1{color:#00d4ff;font-size:18px;font-weight:bold;letter-spacing:2px;}
+.dash-header p{font-size:10px;color:#555;margin-top:2px;}
+.btn-new{padding:9px 20px;border-radius:8px;border:none;background:linear-gradient(135deg,#00d4ff,#0077aa);color:#000;font-weight:bold;font-size:12px;cursor:pointer;letter-spacing:1px;}
+.btn-new:hover{opacity:.9;}
+.dash-body{flex:1;overflow-y:auto;padding:24px;}
+.dash-body::-webkit-scrollbar{width:5px;}
+.dash-body::-webkit-scrollbar-thumb{background:#1a3a6a;border-radius:3px;}
+.dash-section-title{color:#aaa;font-size:12px;text-transform:uppercase;letter-spacing:2px;margin-bottom:16px;}
+.badge-count{background:#0f3460;color:#00d4ff;border-radius:8px;padding:1px 8px;margin-left:6px;font-size:11px;}
+.tpl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;}
+.tpl-card{background:#13131f;border:1px solid #1a2a3a;border-radius:10px;overflow:hidden;transition:border-color .2s;}
+.tpl-card:hover{border-color:#00d4ff44;}
+.tpl-preview{width:100%;aspect-ratio:16/9;position:relative;overflow:hidden;}
+.tpl-src-box{position:absolute;border:1px solid rgba(0,212,255,0.4);border-radius:2px;overflow:hidden;}
+.tpl-src-caption{position:absolute;bottom:0;left:0;right:0;font-size:7px;padding:1px 3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.tpl-src-count{position:absolute;top:4px;right:4px;background:#0008;border-radius:4px;padding:2px 5px;font-size:9px;color:#00d4ff;}
+.tpl-info{padding:10px 12px;}
+.tpl-name{font-weight:bold;font-size:13px;color:#ddd;margin-bottom:3px;}
+.tpl-date{font-size:10px;color:#555;margin-bottom:10px;}
+.tpl-actions{display:flex;gap:6px;}
+.btn-edit{flex:1;padding:6px 0;border-radius:6px;border:1px solid #1a4a8a;background:#0f3460;color:#00d4ff;font-size:11px;font-weight:bold;cursor:pointer;}
+.btn-edit:hover{background:#1a4a8a;}
+.btn-del{padding:6px 10px;border-radius:6px;border:1px solid #3a1a1a;background:#1f0000;color:#ff5252;font-size:11px;cursor:pointer;}
+.btn-del:hover{background:#2a0000;}
+.dash-empty{text-align:center;padding:60px 0;color:#444;}
+.dash-empty .icon{font-size:40px;margin-bottom:12px;}
+.dash-empty p{font-size:13px;color:#444;margin-bottom:6px;}
+.dash-empty small{font-size:11px;color:#333;}
+
+/* ── DB LAYOUT CARD ── */
+.db-card{background:#13131f;border:1px solid #1a2a4a;border-radius:10px;overflow:hidden;transition:border-color .2s;}
+.db-card:hover{border-color:#00d4ff55;}
+.db-card-preview{width:100%;aspect-ratio:16/9;position:relative;overflow:hidden;background:#0a0a14;}
+.db-src-box{position:absolute;background:#003a5a55;border:1px solid rgba(0,212,255,0.35);border-radius:1px;overflow:hidden;}
+.db-wm-box{position:absolute;overflow:hidden;}
+.db-card-badge{position:absolute;top:4px;right:4px;display:flex;gap:3px;flex-wrap:wrap;justify-content:flex-end;}
+.db-badge{font-size:8px;padding:1px 5px;border-radius:3px;font-weight:bold;}
+.db-badge-group{background:#0f3460;color:#00d4ff;border:1px solid #00d4ff33;}
+.db-badge-win{background:#1a2a00;color:#a0e040;border:1px solid #a0e04033;}
+.db-badge-trans{background:#2a1a00;color:#ff9f43;border:1px solid #ff9f4333;}
+.db-badge-sec{background:#1a002a;color:#c084fc;border:1px solid #c084fc33;}
+.db-card-info{padding:10px 12px;}
+.db-card-caption{font-weight:bold;font-size:12px;color:#ddd;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.db-card-meta{font-size:10px;color:#555;margin-bottom:8px;}
+.db-card-actions{display:flex;gap:6px;}
+.btn-import{flex:1;padding:6px 0;border-radius:6px;border:1px solid #1a4a8a;background:#0f3460;color:#00d4ff;font-size:11px;font-weight:bold;cursor:pointer;}
+.btn-import:hover{background:#1a4a8a;}
+.btn-view-json{padding:6px 8px;border-radius:6px;border:1px solid #1a3a2a;background:#0a2a1a;color:#00ff88;font-size:11px;cursor:pointer;}
+.btn-view-json:hover{background:#0f3a26;}
+
+/* JSON VIEWER MODAL */
+#jsonModal{display:none;position:fixed;inset:0;background:#000b;z-index:2000;align-items:center;justify-content:center;}
+#jsonModal.show{display:flex;}
+.json-modal-box{background:#0d0d1a;border:1px solid #1a3a6a;border-radius:12px;width:600px;max-width:95vw;max-height:80vh;display:flex;flex-direction:column;}
+.json-modal-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #1a3a6a;flex-shrink:0;}
+.json-modal-header h3{color:#00d4ff;font-size:13px;}
+.json-modal-body{flex:1;overflow:auto;padding:12px 16px;}
+.json-modal-body pre{font-family:monospace;font-size:11px;color:#aaa;white-space:pre-wrap;word-break:break-all;line-height:1.6;}
+
+/* ══════════════════ BUILDER ══════════════════ */
+.builder-topbar{background:#0d0d1a;border-bottom:1px solid #1a3a6a;padding:8px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.btn-back{padding:5px 10px;border-radius:6px;border:1px solid #1a3a6a;background:transparent;color:#aaa;font-size:11px;cursor:pointer;}
+.btn-back:hover{background:#1a3a6a;}
+.builder-title{color:#00d4ff;font-weight:bold;font-size:14px;margin-left:4px;}
+.builder-info{font-size:10px;color:#444;}
+.btn-builder-save{padding:6px 16px;border-radius:6px;border:none;background:linear-gradient(135deg,#00d4ff,#0077aa);color:#000;font-weight:bold;font-size:11px;cursor:pointer;letter-spacing:1px;}
+.btn-builder-save:hover{opacity:.9;}
+
+.builder-body{flex:1;display:flex;overflow:hidden;}
+
+/* ── TOOLBOX ── */
+.toolbox{width:140px;background:#0d0d1a;border-right:1px solid #1a3a6a;display:flex;flex-direction:column;padding:10px 8px;flex-shrink:0;overflow-y:auto;}
+.toolbox::-webkit-scrollbar{width:3px;}
+.toolbox::-webkit-scrollbar-thumb{background:#1a3a6a;border-radius:2px;}
+.toolbox-label{font-size:9px;color:#555;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.tool-btn{padding:10px 8px;border-radius:8px;border:2px dashed #1a4a8a;background:#0f3460;color:#00d4ff;font-size:11px;font-weight:bold;cursor:pointer;text-align:center;margin-bottom:8px;user-select:none;transition:background .2s;}
+.tool-btn:hover{background:#1a4a8a;}
+.tool-btn .tool-icon{font-size:20px;margin-bottom:4px;}
+.tool-btn.bg-tool{border-color:#4a1a8a;background:#1f0f40;color:#a78bfa;}
+.tool-btn.bg-tool:hover{background:#2a0f50;}
+.layers-label{font-size:9px;color:#444;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;padding-top:10px;border-top:1px solid #1a3a6a;margin-top:4px;}
+.layer-item{padding:5px 7px;border-radius:5px;margin-bottom:3px;background:#13131f;border:1px solid #1a2a3a;cursor:pointer;font-size:10px;color:#aaa;display:flex;align-items:center;gap:5px;white-space:nowrap;overflow:hidden;}
+.layer-item:hover{background:#16213e;}
+.layer-item.selected{background:#0f3460;border-color:#00d4ff44;color:#00d4ff;}
+.layer-item span:last-child{overflow:hidden;text-overflow:ellipsis;}
+.layers-empty{font-size:10px;color:#333;text-align:center;}
+
+/* ── CANVAS AREA ── */
+.canvas-area{flex:1;overflow:auto;display:flex;align-items:flex-start;justify-content:center;padding:20px;background:#090914;}
+#canvas{position:relative;flex-shrink:0;border:2px solid #1a3a6a;border-radius:4px;box-shadow:0 0 40px #00000088;background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);background-size:40px 22px;}
+.canvas-hint{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#333;pointer-events:none;}
+.canvas-hint .hint-icon{font-size:36px;margin-bottom:10px;}
+.canvas-hint p{font-size:13px;}
+.canvas-label{position:absolute;bottom:4px;right:6px;font-size:9px;color:#333;font-family:monospace;}
+
+/* ── SOURCE ON CANVAS ── */
+.src-item{position:absolute;cursor:move;user-select:none;border-radius:2px;overflow:hidden;box-sizing:border-box;}
+.src-item .src-name-tag{position:absolute;top:2px;left:4px;font-size:9px;color:#00d4ffcc;font-family:monospace;font-weight:bold;pointer-events:none;text-shadow:0 1px 3px #000;}
+.src-item .src-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#ffffff22;font-size:20px;pointer-events:none;}
+.src-item .src-caption{position:absolute;bottom:0;left:0;right:0;pointer-events:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.src-item .src-coords{position:absolute;top:2px;right:4px;font-size:8px;color:#00d4ff88;font-family:monospace;pointer-events:none;}
+.src-item .resize-handle{position:absolute;bottom:0;right:0;width:14px;height:14px;cursor:se-resize;border-radius:3px 0 0 0;background:#ffffff33;}
+.src-item.selected{box-shadow:0 0 0 2px #00d4ff,0 2px 16px #00d4ff33;}
+.src-item.selected .resize-handle{background:#00d4ff;}
+
+/* ── RIGHT PANEL ── */
+.right-panel{width:230px;background:#0d0d1a;border-left:1px solid #1a3a6a;display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;transition:width .2s;}
+.right-panel.hidden{width:0;border-left:none;}
+.panel-header{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #1a3a6a;background:#090914;flex-shrink:0;}
+.panel-title{font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:1px;}
+.panel-title.src-title{color:#00d4ff;}
+.panel-title.bg-title{color:#a78bfa;}
+.btn-panel-close{background:none;border:none;color:#666;font-size:14px;cursor:pointer;}
+.btn-panel-close:hover{color:#fff;}
+.panel-body{flex:1;overflow-y:auto;padding:12px;}
+.panel-body::-webkit-scrollbar{width:3px;}
+.panel-body::-webkit-scrollbar-thumb{background:#1a3a6a;border-radius:2px;}
+.panel-footer{padding:10px;border-top:1px solid #1a3a6a;flex-shrink:0;}
+.btn-delete-src{width:100%;padding:7px;border-radius:6px;border:1px solid #3a1a1a;background:#1f0000;color:#ff5252;font-size:11px;font-weight:bold;cursor:pointer;}
+.btn-delete-src:hover{background:#2a0000;}
+
+/* ── PROPERTY FIELDS ── */
+.prop-section{font-size:10px;color:#00d4ff;font-weight:bold;text-transform:uppercase;letter-spacing:1px;margin:14px 0 6px;padding-top:8px;border-top:1px solid #1a3a6a;}
+.prop-section:first-child{margin-top:0;padding-top:0;border-top:none;}
+.prop-section.gfx{color:#a78bfa;}
+.prop-row{margin-bottom:10px;}
+.prop-row label{font-size:10px;color:#888;margin-bottom:4px;display:block;}
+.prop-row input[type=text],.prop-row input[type=number],.prop-row select{width:100%;padding:5px 8px;border-radius:5px;background:#13131f;color:#fff;border:1px solid #1a3a6a;font-size:11px;outline:none;}
+.prop-row input:focus,.prop-row select:focus{border-color:#00d4ff;}
+.prop-row.two-col{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.color-row{display:flex;gap:6px;align-items:center;}
+.color-row input[type=color]{width:32px;height:28px;border-radius:4px;border:1px solid #1a3a6a;background:transparent;cursor:pointer;padding:1px;}
+.color-row input[type=text]{flex:1;}
+.checkbox-row{display:flex;align-items:center;gap:8px;cursor:pointer;}
+.checkbox-row input[type=checkbox]{accent-color:#00ff88;width:13px;height:13px;}
+.checkbox-row span{font-size:11px;color:#aaa;}
+.prop-row select option{background:#13131f;}
+
+/* ── STATUS BAR ── */
+.status-bar{background:#0d0d1a;border-top:1px solid #1a3a6a;padding:4px 16px;display:flex;gap:16px;font-size:10px;color:#555;flex-shrink:0;align-items:center;}
+.status-bar .sel-info{color:#00d4ff;}
+.status-bar .hint{margin-left:auto;}
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- SAVE DIALOG -->
+<div id="saveOverlay">
+  <div class="save-modal">
+    <h3>💾 Save Template</h3>
+    <input type="text" id="saveNameInput" placeholder="Template name…" onkeydown="onSaveKey(event)">
+    <div class="save-modal-btns">
+      <button class="btn-save" onclick="confirmSave()">Save</button>
+      <button class="btn-cancel-save" onclick="closeSaveDialog()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ DASHBOARD VIEW ══════════════ -->
+<div id="dashView" class="active">
+  <div class="dash-header">
+    <div>
+      <h1>⚡ Layout Builder</h1>
+      <p>Drag & Drop Canvas Template Editor</p>
+    </div>
+    <button class="btn-new" onclick="openBuilder(null)">+ New Template</button>
+  </div>
+  <div class="dash-body">
+
+    <!-- DB LAYOUTS SECTION -->
+    <div style="margin-bottom:24px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+        <div class="dash-section-title" style="margin-bottom:0;">
+          DB Layouts <span class="badge-count" id="dbLayoutCount">0</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:5px;">
+            <label style="font-size:10px;color:#aaa;">CID</label>
+            <input type="number" id="dbCid" value="59" style="width:60px;padding:4px 7px;border-radius:5px;background:#13131f;color:#fff;border:1px solid #1a3a6a;font-size:11px;outline:none;">
+          </div>
+          <div style="display:flex;align-items:center;gap:5px;">
+            <label style="font-size:10px;color:#aaa;">Group</label>
+            <select id="dbGroupFilter" onchange="filterDbLayouts()" style="padding:4px 22px 4px 7px;border-radius:5px;background:#13131f;color:#fff;border:1px solid #1a3a6a;font-size:11px;outline:none;appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='5'%3E%3Cpath d='M0 0l4.5 5L9 0z' fill='%2300d4ff'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 6px center;cursor:pointer;">
+              <option value="">All Groups</option>
+            </select>
+          </div>
+          <button onclick="fetchDbLayouts()" id="dbFetchBtn" style="padding:5px 12px;border-radius:6px;border:none;background:#00d4ff;color:#000;font-size:11px;font-weight:bold;cursor:pointer;">⟳ Fetch Layouts</button>
+          <span id="dbFetchStatus" style="font-size:10px;padding:3px 7px;border-radius:4px;display:none;"></span>
+        </div>
+      </div>
+      <div id="dbLayoutGrid" class="tpl-grid"></div>
+      <div id="dbLayoutEmpty" style="text-align:center;padding:20px 0;color:#444;font-size:12px;display:none;">Click "Fetch Layouts" to load from database</div>
+    </div>
+
+    <div style="border-top:1px solid #1a3a6a;margin-bottom:20px;"></div>
+
+    <!-- SAVED TEMPLATES SECTION -->
+    <div class="dash-section-title">
+      My Saved Templates <span class="badge-count" id="tplCount">0</span>
+    </div>
+    <div id="tplGrid" class="tpl-grid"></div>
+    <div id="dashEmpty" class="dash-empty" style="display:none;">
+      <div class="icon">🖼</div>
+      <p>No templates yet</p>
+      <small>Click "New Template" to create your first layout</small>
+    </div>
+  </div>
+</div>
+
+<!-- JSON VIEWER MODAL -->
+<div id="jsonModal">
+  <div class="json-modal-box">
+    <div class="json-modal-header">
+      <h3 id="jsonModalTitle">Layout JSON</h3>
+      <button onclick="closeJsonModal()" style="background:none;border:none;color:#ff5252;font-size:16px;cursor:pointer;">✕</button>
+    </div>
+    <div class="json-modal-body"><pre id="jsonModalPre"></pre></div>
+  </div>
+</div>
+
+<!-- ══════════════ BUILDER VIEW ══════════════ -->
+<div id="builderView">
+  <!-- TOP BAR -->
+  <div class="builder-topbar">
+    <button class="btn-back" onclick="goToDashboard()">← Dashboard</button>
+    <span class="builder-title">⚡ <span id="builderTitleText">New Template</span></span>
+    <div style="display:flex;align-items:center;gap:6px;margin-left:10px;">
+      <label style="font-size:10px;color:#aaa;white-space:nowrap;">Group</label>
+      <input type="text" id="builderGroupName" placeholder="e.g. News" value=""
+        style="width:100px;padding:4px 8px;border-radius:5px;background:#13131f;color:#fff;border:1px solid #1a3a6a;font-size:11px;outline:none;"
+        oninput="onBuilderGroupChange()" onfocus="showGroupSuggestions()" onblur="hideGroupSuggestions()"
+        autocomplete="off">
+      <div style="position:relative;">
+        <div id="groupSuggestions" style="display:none;position:absolute;top:0;left:-108px;width:108px;background:#13131f;border:1px solid #1a3a6a;border-radius:5px;z-index:100;max-height:120px;overflow-y:auto;"></div>
+      </div>
+      <label style="font-size:10px;color:#aaa;white-space:nowrap;">Caption</label>
+      <input type="text" id="builderCaptionName" placeholder="e.g. News" value=""
+        style="width:100px;padding:4px 8px;border-radius:5px;background:#13131f;color:#fff;border:1px solid #1a3a6a;font-size:11px;outline:none;"
+        autocomplete="off">
+    </div>
+    <div style="flex:1"></div>
+    <span class="builder-info" id="builderInfo">0 source(s) | Canvas: 1920×1080</span>
+    <button class="btn-builder-save" onclick="openSaveDialog()">💾 Save Local</button>
+    <button id="btnSaveDb" onclick="saveToDb()" style="display:none;padding:6px 16px;border-radius:6px;border:none;background:linear-gradient(135deg,#00ff88,#00aa55);color:#000;font-weight:bold;font-size:11px;cursor:pointer;letter-spacing:1px;">☁ Save to DB</button>
+    <button id="btnAddDb" onclick="addToDb()" style="display:none;padding:6px 16px;border-radius:6px;border:none; background:linear-gradient(135deg,#ffaa00,#ff7700); color:#000;font-weight:bold;font-size:11px;cursor:pointer;">➕ Add to DB </button>
+    <span id="dbSaveStatus" style="font-size:10px;display:none;padding:3px 8px;border-radius:4px;"></span>
+  </div>
+
+  <div class="builder-body">
+    <!-- TOOLBOX -->
+    <div class="toolbox">
+      <div class="toolbox-label">Toolbox</div>
+      <div class="tool-btn" draggable="true" ondragstart="onToolDragStart(event)" onclick="addSource()" title="Click or drag to canvas">
+        <div class="tool-icon">📡</div>
+        Add Source
+      </div>
+      <div class="tool-btn bg-tool" onclick="openBgPanel()" title="Set background">
+        <div class="tool-icon">🖼</div>
+        Background
+      </div>
+      <div class="layers-label">Layers</div>
+      <div id="layerList"><div class="layers-empty">No sources</div></div>
+    </div>
+
+    <!-- CANVAS AREA -->
+    <div class="canvas-area" id="canvasArea" ondragover="event.preventDefault()" ondrop="onCanvasDrop(event)">
+      <div id="canvas" onclick="onCanvasClick(event)">
+        <div class="canvas-hint" id="canvasHint">
+          <div class="hint-icon">📡</div>
+          <p>Click "Add Source" or drag from toolbox</p>
+        </div>
+        <div class="canvas-label">1920×1080</div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="right-panel hidden" id="rightPanel">
+      <!-- Source panel -->
+      <div id="srcPanel" style="display:none;flex-direction:column;height:100%;">
+        <div class="panel-header">
+          <span class="panel-title src-title">⚙ Properties</span>
+          <button class="btn-panel-close" onclick="closePanel()">✕</button>
+        </div>
+        <div class="panel-body">
+          <div class="prop-section">Source</div>
+          <div class="prop-row">
+            <label>Source Name</label>
+            <input type="text" id="pp_label" oninput="ppUpdate('label',this.value)">
+          </div>
+          <div class="prop-section">Position & Size</div>
+          <div class="prop-row two-col">
+            <div><label>X</label><input type="number" id="pp_x" oninput="ppUpdate('x',+this.value)"></div>
+            <div><label>Y</label><input type="number" id="pp_y" oninput="ppUpdate('y',+this.value)"></div>
+          </div>
+          <div class="prop-row two-col">
+            <div><label>Width</label><input type="number" id="pp_w" oninput="ppUpdate('w',+this.value)"></div>
+            <div><label>Height</label><input type="number" id="pp_h" oninput="ppUpdate('h',+this.value)"></div>
+          </div>
+          <div class="prop-section">Source Background</div>
+          <div class="prop-row">
+            <label>Background Color</label>
+            <div class="color-row">
+              <input type="color" id="pp_bgColor_picker" oninput="document.getElementById('pp_bgColor').value=this.value;ppUpdate('bgColor',this.value)">
+              <input type="text" id="pp_bgColor" oninput="syncColorPicker('pp_bgColor','pp_bgColor_picker');ppUpdate('bgColor',this.value)">
+            </div>
+          </div>
+          <div class="prop-section">Source Border</div>
+          <div class="prop-row">
+            <label>Border Color</label>
+            <div class="color-row">
+              <input type="color" id="pp_borderColor_picker" oninput="document.getElementById('pp_borderColor').value=this.value;ppUpdate('borderColor',this.value)">
+              <input type="text" id="pp_borderColor" oninput="syncColorPicker('pp_borderColor','pp_borderColor_picker');ppUpdate('borderColor',this.value)">
+            </div>
+          </div>
+          <div class="prop-row two-col">
+            <div><label>Border Weight (px)</label><input type="number" id="pp_borderWidth" min="0" oninput="ppUpdate('borderWidth',+this.value)"></div>
+            <div><label>Border Radius (px)</label><input type="number" id="pp_borderRadius" min="0" oninput="ppUpdate('borderRadius',+this.value)"></div>
+          </div>
+          <div class="prop-section gfx">Caption</div>
+          <div class="prop-row">
+            <label class="checkbox-row">
+              <input type="checkbox" id="pp_showCaption" onchange="ppUpdate('showCaption',this.checked);toggleCaptionFields()">
+              <span>Show Caption</span>
+            </label>
+          </div>
+          <div id="captionFields">
+            <div class="prop-row">
+              <label>Caption Text</label>
+              <input type="text" id="pp_captionText" placeholder="Auto = source name" oninput="ppUpdate('captionText',this.value)">
+            </div>
+            <div class="prop-row">
+              <label>Font</label>
+              <select id="pp_captionFont" onchange="ppUpdate('captionFont',this.value)">
+                <option>Arial</option><option>Helvetica</option><option>Georgia</option>
+                <option>Verdana</option><option>Trebuchet MS</option><option>Courier New</option><option>Times New Roman</option>
+              </select>
+            </div>
+            <div class="prop-row">
+              <label>Font Size</label>
+              <input type="number" id="pp_captionFontSize" oninput="ppUpdate('captionFontSize',+this.value)">
+            </div>
+            <div class="prop-row two-col">
+              <div>
+                <label>Font Color</label>
+                <input type="color" id="pp_captionColor" style="width:100%;height:28px;border-radius:4px;border:1px solid #1a3a6a;background:transparent;cursor:pointer;" oninput="ppUpdate('captionColor',this.value)">
+              </div>
+              <div>
+                <label>Caption BG</label>
+                <input type="color" id="pp_captionBg" style="width:100%;height:28px;border-radius:4px;border:1px solid #1a3a6a;background:transparent;cursor:pointer;" oninput="ppUpdate('captionBg',this.value+'cc')">
+              </div>
+            </div>
+            <div class="prop-row">
+              <label>Border Color</label>
+              <div class="color-row">
+                <input type="color" id="pp_captionBorderColor_picker" oninput="document.getElementById('pp_captionBorderColor').value=this.value;ppUpdate('captionBorderColor',this.value)">
+                <input type="text" id="pp_captionBorderColor" oninput="syncColorPicker('pp_captionBorderColor','pp_captionBorderColor_picker');ppUpdate('captionBorderColor',this.value)">
+              </div>
+            </div>
+            <div class="prop-row two-col">
+              <div>
+                <label>Border Weight (px)</label>
+                <input type="number" id="pp_captionBorderWidth" min="0" oninput="ppUpdate('captionBorderWidth',+this.value)">
+              </div>
+              <div>
+                <label>Border Radius (px)</label>
+                <input type="number" id="pp_captionRadius" min="0" oninput="ppUpdate('captionRadius',+this.value)">
+              </div>
+            </div>
+            <div class="prop-row two-col">
+              <div>
+                <label>Animation (ms)</label>
+                <input type="number" id="pp_captionAnim" min="0" step="100" oninput="ppUpdate('captionAnim',+this.value)">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="panel-footer">
+          <button class="btn-delete-src" onclick="deleteSelected()">🗑 Delete Source</button>
+        </div>
+      </div>
+
+      <!-- BG panel -->
+      <div id="bgPanel" style="display:none;flex-direction:column;height:100%;">
+        <div class="panel-header">
+          <span class="panel-title bg-title">🖼 Background</span>
+          <button class="btn-panel-close" onclick="closePanel()">✕</button>
+        </div>
+        <div class="panel-body">
+          <div class="prop-section gfx">Background</div>
+          <div class="prop-row">
+            <label>BG Color</label>
+            <div class="color-row">
+              <input type="color" id="bg_color_picker" oninput="bgUpdate('color',this.value)">
+              <input type="text" id="bg_color" oninput="syncColorPicker('bg_color','bg_color_picker');bgUpdate('color',this.value)">
+            </div>
+          </div>
+          <div class="prop-row">
+            <label>Image URL</label>
+            <input type="text" id="bg_imageUrl" placeholder="https://..." oninput="bgUpdate('imageUrl',this.value)">
+          </div>
+          <div class="prop-row" id="bgFitRow" style="display:none;">
+            <label>Image Fit</label>
+            <select id="bg_imageFit" onchange="bgUpdate('imageFit',this.value)">
+              <option value="cover">cover</option>
+              <option value="contain">contain</option>
+              <option value="fill">fill</option>
+              <option value="none">none</option>
+            </select>
+          </div>
+          <div id="bgImgPreview" style="display:none;margin-top:8px;border-radius:6px;overflow:hidden;border:1px solid #1a3a6a;">
+            <img id="bgPreviewImg" src="" alt="preview" style="width:100%;height:80px;object-fit:cover;">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATUS BAR -->
+  <div class="status-bar">
+    <span id="statusInfo">Click a source to select</span>
+    <span class="hint">Tip: Drag the bottom-right handle to resize</span>
+  </div>
+</div>
+
+<script defer>
+// ═══════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════
+const CANVAS_W = 1920, CANVAS_H = 1080, SCALE = 0.45;
+let sources = [];
+let bg = { color: '#1a1a2e', imageUrl: '', imageFit: 'cover' };
+let selectedId = null;
+let editingId = null, editingName = '';
+let dbLayoutMeta = null; // holds original DB layout record when imported
+let idCounter = 1;
+const newId = () => 'src_' + (idCounter++);
+const snap = (v, s = 10) => Math.round(v / s) * s;
+
+// Templates in memory (localStorage fallback)
+let templates = [];
+
+function onBuilderGroupChange() {
+  if (dbLayoutMeta) dbLayoutMeta = { ...dbLayoutMeta, groupName: document.getElementById('builderGroupName').value.trim() };
+}
+
+function showGroupSuggestions() {
+  const groups = [...new Set([
+    ...dbLayouts.map(l => l.groupName),
+    ...getFromStorage().map(t => t.groupName)
+  ].filter(Boolean))].sort();
+  if (!groups.length) return;
+  const box = document.getElementById('groupSuggestions');
+  box.innerHTML = '';
+  groups.forEach(g => {
+    const d = document.createElement('div');
+    d.textContent = g;
+    d.style.cssText = 'padding:5px 10px;font-size:11px;color:#ddd;cursor:pointer;white-space:nowrap;';
+    d.onmousedown = () => {
+      document.getElementById('builderGroupName').value = g;
+      onBuilderGroupChange();
+    };
+    d.onmouseover = () => d.style.background = '#1a3a6a';
+    d.onmouseout  = () => d.style.background = '';
+    box.appendChild(d);
+  });
+  box.style.display = 'block';
+}
+function hideGroupSuggestions() {
+  setTimeout(() => document.getElementById('groupSuggestions').style.display = 'none', 150);
+}
+// ═══════════════════════════════════════════════════════
+async function saveToDb() {
+  if (!dbLayoutMeta) { showToast('No DB layout loaded', 'err'); return; }
+   const groupName = document.getElementById('builderGroupName').value.trim();
+  const captionName = document.getElementById('builderCaptionName').value.trim();
+  if (!groupName || !captionName) {
+    showToast('Group name and caption name required', 'err');
+    return;
+  }
+  const btn = document.getElementById('btnSaveDb');
+  const statusEl = document.getElementById('dbSaveStatus');
+
+  // Build MixLayoutList from current canvas sources
+  const mixList = sources.map((s, i) => ({
+    count: i + 1,
+    LocationX: Math.round(s.x),
+    LocationY: Math.round(s.y),
+    ImageWidth: Math.round(s.w),
+    ImageHeight: Math.round(s.h),
+    BackGroundColor: (s.bgColor || '#000000').replace('#','0x'),
+    BorderColor: (s.borderColor || '#000000').replace('#','0x'),
+    BorderWidth: s.borderWidth || 0,
+    BorderRadius: s.borderRadius || 0,
+  }));
+
+  // Preserve existing WaterMarkList from original record, or build blanks
+  let wmList = [];
+  try {
+    const orig = JSON.parse(dbLayoutMeta.pubnubMsg);
+      wmList = sources.map((s, i) => {
+      const show = s.showCaption;
+      return {
+        count: i + 1,
+        LocationX: s.x ? Math.round(s.x) : 0,
+        LocationY: (s.y + s.h) ? Math.round(s.y + s.h) : 0,
+        WaterMarkWidth: (s.w) ? Math.round(s.w) : 0,
+        WaterMarkHeight: s.captionFontSize ? Math.round(s.captionFontSize * 2) : 0,
+        Text: s.captionText || s.label || 'water mark',
+        FontColor: (s.captionColor || '#000000').replace('#','0x'),
+        FontSize: String(s.captionFontSize || 22),
+        BackGroundColor: (s.captionBg || '#FFFFFF').replace('#','0x').substring(0,8),
+        BorderColor: (s.captionBorderColor || '#000000').replace('#','0x'),
+        BorderWidth: s.captionBorderWidth || 0,
+        BorderRadius: s.captionRadius || 0,
+        Animation: s.captionAnim || 0,
+        FontFamily: s.captionFont || 'Arial',
+        ShowCaption: s.showCaption || false
+      };
+
+    });
+  } catch {
+    wmList = sources.map((_, i) => ({
+      count: i + 1, LocationX: 0, LocationY: 0,
+      WaterMarkWidth: 0, WaterMarkHeight: 0,
+      Text: 'water mark', FontColor: '0x000000', FontSize: '22', BackGroundColor: '0xFFFFFF'
+    }));
+  }
+
+  const pubnubMsg = JSON.stringify({ MixLayoutList: mixList, WaterMarkList: wmList });
+    console.log('Saving to DB with payload:', { MixLayoutList: mixList, WaterMarkList: wmList });
+      const payload = {
+    data: {
+      id:               dbLayoutMeta.id,
+      cid:              dbLayoutMeta.cid,
+      caption:          captionName,
+      windowsCount:     sources.length,
+      groupName:        groupName,
+      pubnubMsg,
+      isTransition:     dbLayoutMeta.isTransition,
+      isSecondary:      dbLayoutMeta.isSecondary,
+      isBG:             dbLayoutMeta.isBG,
+      transitionVideo:  dbLayoutMeta.transitionVideo || '',
+      bgVideo:          dbLayoutMeta.bgVideo || '',
+      secondaryPlayMode:dbLayoutMeta.secondaryPlayMode || ''
+    }
+  };
+
+  btn.disabled = true;
+  btn.textContent = '⏳ Saving…';
+  setDbSaveStatus('Saving…', 'loading');
+
+  try {
+    const res = await fetch('https://uatapi2.janya.video/pcr/v1/windows/update', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    if (json.summary?.description === 'OK' || json.summary?.id === 1) {
+      // Update local meta so subsequent saves reflect new windowsCount
+      dbLayoutMeta = { ...dbLayoutMeta, windowsCount: sources.length, pubnubMsg };
+      setDbSaveStatus('✓ Saved to DB', 'ok');
+      showToast(`✓ Template saved to DB`);
+    } else {
+      throw new Error(JSON.stringify(json));
+    }
+  } catch(e) {
+    setDbSaveStatus('✗ ' + e.message, 'err');
+    showToast('DB save failed: ' + e.message, 'err');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '☁ Save to DB';
+  }
+}
+
+function setDbSaveStatus(msg, type) {
+  const el = document.getElementById('dbSaveStatus');
+  el.style.display = 'inline-block';
+  el.textContent = msg;
+  el.style.background = type === 'ok' ? '#001f10' : type === 'err' ? '#1f0000' : '#1f1000';
+  el.style.color       = type === 'ok' ? '#00e676' : type === 'err' ? '#ff5252' : '#ffb300';
+  el.style.border      = `1px solid ${type === 'ok' ? '#00e67633' : type === 'err' ? '#ff525233' : '#ffb30033'}`;
+  el.style.borderRadius = '4px';
+  el.style.padding = '3px 8px';
+}
+
+// ═══════════════════════════════════════════════════════
+//  DB LAYOUTS — FETCH & RENDER
+// ═══════════════════════════════════════════════════════
+const LAYOUTS_API = 'https://uatapi2.janya.video/pcr/v1/get';
+let dbLayouts = [];       // all fetched layouts
+let dbLayoutsFiltered = []; // after group filter
+
+async function fetchDbLayouts() {
+  const cid = document.getElementById('dbCid').value.trim() || '59';
+  const btn = document.getElementById('dbFetchBtn');
+  const status = document.getElementById('dbFetchStatus');
+  btn.disabled = true; btn.textContent = '⏳ Loading…';
+  setDbStatus('Fetching…', 'loading');
+  try {
+    const res = await fetch(`${LAYOUTS_API}?cid=${cid}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    dbLayouts = json.data || [];
+    if (!dbLayouts.length) throw new Error('No layouts returned');
+    populateGroupFilter();
+    filterDbLayouts();
+    setDbStatus(`✓ ${dbLayouts.length} layouts`, 'ok');
+  } catch(e) {
+    setDbStatus('Error: ' + e.message, 'err');
+    document.getElementById('dbLayoutGrid').innerHTML = '';
+    document.getElementById('dbLayoutEmpty').style.display = 'block';
+    document.getElementById('dbLayoutEmpty').textContent = 'Failed to load: ' + e.message;
+  } finally {
+    btn.disabled = false; btn.textContent = '⟳ Fetch Layouts';
+  }
+}
+
+function setDbStatus(msg, type) {
+  const el = document.getElementById('dbFetchStatus');
+  el.style.display = 'inline-block';
+  el.textContent = msg;
+  el.style.background = type === 'ok' ? '#001f10' : type === 'err' ? '#1f0000' : '#1f1000';
+  el.style.color = type === 'ok' ? '#00e676' : type === 'err' ? '#ff5252' : '#ffb300';
+  el.style.border = `1px solid ${type === 'ok' ? '#00e67633' : type === 'err' ? '#ff525233' : '#ffb30033'}`;
+}
+
+function populateGroupFilter() {
+  const groups = [...new Set(dbLayouts.map(l => l.groupName).filter(Boolean))].sort();
+  const sel = document.getElementById('dbGroupFilter');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">All Groups</option>';
+  groups.forEach(g => sel.innerHTML += `<option value="${g}"${g===cur?' selected':''}>${g}</option>`);
+}
+
+function filterDbLayouts() {
+  const group = document.getElementById('dbGroupFilter').value;
+  dbLayoutsFiltered = group ? dbLayouts.filter(l => l.groupName === group) : [...dbLayouts];
+  renderDbLayouts();
+}
+
+function renderDbLayouts() {
+  const grid = document.getElementById('dbLayoutGrid');
+  const empty = document.getElementById('dbLayoutEmpty');
+  document.getElementById('dbLayoutCount').textContent = dbLayoutsFiltered.length;
+  grid.innerHTML = '';
+  if (!dbLayoutsFiltered.length) { empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+
+  dbLayoutsFiltered.forEach(layout => {
+    let mixList = [], wmList = [];
+    try { const p = JSON.parse(layout.pubnubMsg); mixList = p.MixLayoutList||[]; wmList = p.WaterMarkList||[]; } catch{}
+
+    // Build source boxes for preview
+    let srcBoxes = mixList.map(m => {
+      const l = (m.LocationX/CANVAS_W*100).toFixed(2);
+      const t = (m.LocationY/CANVAS_H*100).toFixed(2);
+      const w = (m.ImageWidth/CANVAS_W*100).toFixed(2);
+      const h = (m.ImageHeight/CANVAS_H*100).toFixed(2);
+      return `<div class="db-src-box" style="left:${l}%;top:${t}%;width:${w}%;height:${h}%;"></div>`;
+    }).join('');
+
+    // WaterMark boxes
+    let wmBoxes = wmList.filter(w => w.WaterMarkWidth > 0).map(w => {
+      const l = (w.LocationX/CANVAS_W*100).toFixed(2);
+      const t = (w.LocationY/CANVAS_H*100).toFixed(2);
+      const ww = (w.WaterMarkWidth/CANVAS_W*100).toFixed(2);
+      const wh = (w.WaterMarkHeight/CANVAS_H*100).toFixed(2);
+      const fg = w.FontColor ? '#' + w.FontColor.replace('0x','') : '#000';
+      const bg2 = w.BackGroundColor ? '#' + w.BackGroundColor.replace('0x','') : '#fff';
+      return `<div class="db-wm-box" style="left:${l}%;top:${t}%;width:${ww}%;height:${wh}%;background:${bg2};color:${fg};font-size:6px;overflow:hidden;padding:1px 2px;">${esc(w.Text||'')}</div>`;
+    }).join('');
+
+    const badges = [
+      `<span class="db-badge db-badge-group">${esc(layout.groupName)}</span>`,
+      `<span class="db-badge db-badge-win">W:${layout.windowsCount}</span>`,
+      layout.isTransition ? `<span class="db-badge db-badge-trans">TRANS</span>` : '',
+      layout.isSecondary  ? `<span class="db-badge db-badge-sec">SEC</span>`   : '',
+    ].join('');
+
+    const card = document.createElement('div');
+    card.className = 'db-card';
+    card.innerHTML = `
+      <div class="db-card-preview">
+        ${srcBoxes}${wmBoxes}
+        <div class="db-card-badge">${badges}</div>
+      </div>
+      <div class="db-card-info">
+        <div class="db-card-caption" title="${esc(layout.caption)}">${esc(layout.caption)}</div>
+        <div class="db-card-meta">ID: ${layout.id} &nbsp;|&nbsp; BG: ${esc(layout.bgVideo||'—')}</div>
+        <div class="db-card-actions">
+          <button class="btn-import" onclick="importDbLayout(${layout.id})">⬇ Import to Canvas</button>
+          <button class="btn-view-json" onclick="viewLayoutJson(${layout.id})" title="View raw JSON">{ }</button>
+          <button class="btn-del" onclick="deleteDbLayout(${layout.id})">🗑 Delete</button>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+// Import a DB layout into the builder as editable sources
+function importDbLayout(id) {
+  const layout = dbLayouts.find(l => l.id === id);
+  if (!layout) return;
+  // let mixList = [];
+  // try { mixList = JSON.parse(layout.pubnubMsg).MixLayoutList || []; } catch{}
+  let mixList = [], wmList = [];
+  try {
+    const parsed = JSON.parse(layout.pubnubMsg);
+    mixList =   parsed.MixLayoutList || [];
+    wmList = parsed.WaterMarkList || [];
+  } catch {}
+  // Build sources from MixLayoutList
+  // const imported = mixList.map((m, i) => ({
+  //   id: newId(),
+  //   label: `Source ${i+1}`,
+  //   x: m.LocationX, y: m.LocationY, w: m.ImageWidth, h: m.ImageHeight,
+  //   bgColor: '#000000',
+  //   showCaption: true,
+  //   captionText: '',
+  //   captionBg: '#000000cc',
+  //   captionColor: '#ffffff',
+  //   captionFont: 'Arial',
+  //   captionFontSize: 18,
+  //   captionBorderColor: '#ffffff',
+  //   captionBorderWidth: 0,
+  //   captionRadius: 0,
+  //   captionAnim: 0
+  // }));
+  // const imported = mixList.map((m, i) => (
+  //   {
+    
+  //   id: newId(),
+  //   label: `Source ${i+1}`,
+  //   x: m.LocationX, y: m.LocationY, w: m.ImageWidth, h: m.ImageHeight,
+  //   bgColor: '#' + (m.BackGroundColor || '000000').replace('0x','') + 'cc',
+  //   showCaption: true,
+  //   captionText: wm.Text || '',
+  //   captionBg: '#' + (wm.BackGroundColor || '000000').replace('0x','') + 'cc',
+  //   captionColor: '#' + (wm.FontColor || 'ffffff').replace('0x',''),
+  //   captionFont: wm.FontFamily || 'Arial',
+  //   captionFontSize: Number(wm.FontSize) || 18,
+  //   captionBorderColor: '#' + (wm.BorderColor || 'ffffff').replace('0x',''),
+  //   captionBorderWidth: wm.BorderWidth || 0,
+  //   captionRadius:  wm.BorderRadius || 0,
+  //   captionAnim:  wm.Animation || 0
+  // }));
+
+  const imported = mixList.map((m, i) => {
+  const wm = wmList[i] || {};
+
+  return {
+    id: newId(),
+    label: `Source ${i+1}`,
+    x: m.LocationX,
+    y: m.LocationY,
+    w: m.ImageWidth,
+    h: m.ImageHeight,
+    bgColor: '#' + (m.BackGroundColor || '0x000000').replace('0x',''),
+    borderColor: '#' + (m.BorderColor || '0x000000').replace('0x',''),
+    borderWidth: m.BorderWidth || 0,
+    borderRadius: m.BorderRadius || 0,
+    captionText: wm.Text || '',
+    captionFont: wm.FontFamily || 'Arial',
+    captionFontSize: Number(wm.FontSize) || 18,
+    captionColor: '#' + (wm.FontColor || '0x000000').replace('0x',''),
+    captionBg: '#' + (wm.BackGroundColor || '0xFFFFFF').replace('0x','') + 'cc',
+    captionBorderColor: '#' + (wm.BorderColor || '0x000000').replace('0x',''),
+    captionBorderWidth: wm.BorderWidth || 0,
+    captionRadius: wm.BorderRadius || 0,
+    captionAnim: wm.Animation || 0,
+    showCaption: wm.ShowCaption || false
+  };
+});
+
+  sources = imported;
+  bg = { color: '#1a1a2e', imageUrl: '', imageFit: 'cover' };
+  editingId = null;
+  editingName = layout.caption;
+  dbLayoutMeta = layout; // store full original record for DB save
+  selectedId = null;
+  closePanel();
+  document.getElementById('builderTitleText').textContent = layout.caption;
+  document.getElementById('builderGroupName').value = layout.groupName || '';
+  document.getElementById('builderCaptionName').value = layout.caption || '';
+  document.getElementById('btnSaveDb').style.display = 'inline-block';
+  document.getElementById('btnAddDb').style.display = 'none';
+  document.getElementById('dbSaveStatus').style.display = 'none';
+  applyCanvasBg();
+  renderCanvas();
+  renderLayers();
+  showView('builder');
+  showToast(`Imported "${layout.caption}" — ${imported.length} source(s)`);
+}
+
+// JSON viewer
+function viewLayoutJson(id) {
+  const layout = dbLayouts.find(l => l.id === id);
+  if (!layout) return;
+  let pretty = {};
+  try { pretty = { ...layout, pubnubMsg: JSON.parse(layout.pubnubMsg) }; } catch { pretty = layout; }
+  document.getElementById('jsonModalTitle').textContent = `JSON — ${layout.caption} (ID: ${layout.id})`;
+  document.getElementById('jsonModalPre').textContent = JSON.stringify(pretty, null, 2);
+  document.getElementById('jsonModal').classList.add('show');
+}
+function closeJsonModal() { document.getElementById('jsonModal').classList.remove('show'); }
+
+// ═══════════════════════════════════════════════════════
+//  STORAGE
+// ═══════════════════════════════════════════════════════
+function saveToStorage(tpl) {
+  try {
+    const all = getFromStorage();
+    const idx = all.findIndex(t => t.id === tpl.id);
+    if (idx >= 0) all[idx] = tpl; else all.unshift(tpl);
+    localStorage.setItem('lb_templates', JSON.stringify(all));
+    return true;
+  } catch(e) { return false; }
+}
+function getFromStorage() {
+  try { return JSON.parse(localStorage.getItem('lb_templates') || '[]'); } catch { return []; }
+}
+function deleteFromStorage(id) {
+  try {
+    const all = getFromStorage().filter(t => t.id !== id);
+    localStorage.setItem('lb_templates', JSON.stringify(all));
+  } catch {}
+}
+
+// ═══════════════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════════════
+let toastTimer;
+function showToast(msg, type = 'ok') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = type;
+  el.style.display = 'block';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.style.display = 'none', 2500);
+}
+
+// ═══════════════════════════════════════════════════════
+//  VIEWS
+// ═══════════════════════════════════════════════════════
+function showView(name) {
+  document.getElementById('dashView').classList.toggle('active', name === 'dashboard');
+  document.getElementById('builderView').classList.toggle('active', name === 'builder');
+}
+function goToDashboard() {
+  renderDashboard();
+  showView('dashboard');
+}
+
+// ═══════════════════════════════════════════════════════
+//  DASHBOARD
+// ═══════════════════════════════════════════════════════
+function renderDashboard() {
+  templates = getFromStorage();
+  const grid = document.getElementById('tplGrid');
+  const empty = document.getElementById('dashEmpty');
+  document.getElementById('tplCount').textContent = templates.length;
+  grid.innerHTML = '';
+  if (!templates.length) { empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  templates.forEach(tpl => {
+    const card = document.createElement('div');
+    card.className = 'tpl-card';
+    const bgStyle = tpl.bg.imageUrl
+      ? `background:url('${esc(tpl.bg.imageUrl)}') center/cover;`
+      : `background:${tpl.bg.color};`;
+    let srcBoxes = tpl.sources.map(s => {
+      const l = (s.x/CANVAS_W*100).toFixed(2), t2 = (s.y/CANVAS_H*100).toFixed(2);
+      const w = (s.w/CANVAS_W*100).toFixed(2), h2 = (s.h/CANVAS_H*100).toFixed(2);
+      const cap = s.showCaption ? `<div class="tpl-src-caption" style="background:${s.captionBg};color:${s.captionColor};">${esc(s.captionText||s.label)}</div>` : '';
+      return `<div class="tpl-src-box" style="left:${l}%;top:${t2}%;width:${w}%;height:${h2}%;background:${s.bgColor};">${cap}</div>`;
+    }).join('');
+    card.innerHTML = `
+      <div class="tpl-preview" style="${bgStyle}">${srcBoxes}<span class="tpl-src-count">${tpl.sources.length} src</span></div>
+      <div class="tpl-info">
+        <div class="tpl-name">${esc(tpl.name)}</div>
+        <div class="tpl-date">${tpl.groupName ? `<span style="background:#0f3460;color:#00d4ff;border-radius:3px;padding:1px 5px;font-size:9px;margin-right:4px;">${esc(tpl.groupName)}</span>` : ''}${new Date(tpl.updatedAt).toLocaleString()}</div>
+        <div class="tpl-actions">
+          <button class="btn-edit" onclick="openBuilder(templates.find(t=>t.id==='${tpl.id}'))">✏ Edit</button>
+          <button class="btn-del" onclick="handleDelete('${tpl.id}')">🗑</button>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+function handleDelete(id) {
+  deleteFromStorage(id);
+  showToast('Template deleted');
+  renderDashboard();
+}
+
+// ═══════════════════════════════════════════════════════
+//  BUILDER — OPEN
+// ═══════════════════════════════════════════════════════
+function openBuilder(tpl) {
+  sources = [];
+  dbLayoutMeta = null;
+  document.getElementById('btnSaveDb').style.display = 'none';
+  document.getElementById('btnAddDb').style.display = tpl ? 'none' : 'inline-block';
+  document.getElementById('dbSaveStatus').style.display = 'none';
+  if (tpl) {
+    tpl.sources.forEach(s => sources.push({ ...s, id: newId() }));
+    bg = { ...tpl.bg };
+    editingId = tpl.id;
+    editingName = tpl.name;
+    document.getElementById('builderGroupName').value = tpl.groupName || '';
+  } else {
+    bg = { color: '#1a1a2e', imageUrl: '', imageFit: 'cover' };
+    editingId = null;
+    editingName = '';
+    document.getElementById('builderGroupName').value = '';
+  }
+  selectedId = null;
+  closePanel();
+  document.getElementById('builderTitleText').textContent = editingName || 'New Template';
+  applyCanvasBg();
+  renderCanvas();
+  renderLayers();
+  showView('builder');
+}
+
+// ═══════════════════════════════════════════════════════
+//  CANVAS
+// ═══════════════════════════════════════════════════════
+function applyCanvasBg() {
+  const c = document.getElementById('canvas');
+  c.style.width  = (CANVAS_W * SCALE) + 'px';
+  c.style.height = (CANVAS_H * SCALE) + 'px';
+  if (bg.imageUrl) {
+    c.style.background = `url('${bg.imageUrl}') center/${bg.imageFit} no-repeat`;
+    c.style.backgroundColor = bg.color;
+  } else {
+    c.style.background = bg.color;
+    c.style.backgroundImage = 'linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px)';
+    c.style.backgroundSize = '40px 22px';
+  }
+}
+
+function renderCanvas() {
+  const c = document.getElementById('canvas');
+  // Remove old source elements
+  c.querySelectorAll('.src-item').forEach(el => el.remove());
+  document.getElementById('canvasHint').style.display = sources.length ? 'none' : 'flex';
+  document.getElementById('builderInfo').textContent = `${sources.length} source(s) | Canvas: ${CANVAS_W}×${CANVAS_H}`;
+  sources.forEach(s => {
+    const el = createSourceEl(s);
+    c.appendChild(el);
+  });
+  updateStatusBar();
+}
+
+function createSourceEl(s) {
+  const el = document.createElement('div');
+  el.className = 'src-item' + (s.id === selectedId ? ' selected' : '');
+  el.id = 'si_' + s.id;
+  el.dataset.id = s.id;
+  el.style.cssText = `left:${s.x*SCALE}px;top:${s.y*SCALE}px;width:${s.w*SCALE}px;height:${s.h*SCALE}px;background:${s.bgColor};border:${(s.borderWidth||0)*SCALE}px solid ${s.borderColor||'rgba(255,255,255,0.15)'};${s.id===selectedId ? 'box-shadow:0 0 0 2px #00d4ff;' : ''};border-radius:${(s.borderRadius||0)*SCALE}px;`;
+  const capText = s.captionText || s.label;
+  el.innerHTML = `
+    <span class="src-name-tag" style="font-size:${Math.max(8,11*SCALE)}px;">📡 ${esc(s.label)}</span>
+    <span class="src-center" style="font-size:${Math.max(10,20*SCALE)}px;">▶</span>
+    ${s.showCaption ? `<div class="src-caption" style="background:${s.captionBg};color:${s.captionColor};font-family:${s.captionFont};font-size:${s.captionFontSize*SCALE}px;padding:${2*SCALE}px ${4*SCALE}px;border:${(s.captionBorderWidth||0)*SCALE}px solid ${s.captionBorderColor||'transparent'};border-radius:${(s.captionRadius||0)*SCALE}px;${s.captionAnim?`transition:all ${s.captionAnim}ms ease;`:''}">${esc(capText)}</div>` : ''}
+    ${s.id===selectedId ? `<span class="src-coords" style="font-size:${8*SCALE}px;">${s.x},${s.y} ${s.w}×${s.h}</span>` : ''}
+    <div class="resize-handle"></div>`;
+  // Drag move
+  el.addEventListener('mousedown', e => {
+    if (e.target.classList.contains('resize-handle')) return;
+    e.stopPropagation();
+    selectSource(s.id);
+    const startX = e.clientX, startY = e.clientY, ox = s.x, oy = s.y;
+    const move = ev => {
+      s.x = snap(Math.max(0, ox + (ev.clientX - startX) / SCALE));
+      s.y = snap(Math.max(0, oy + (ev.clientY - startY) / SCALE));
+      el.style.left = s.x * SCALE + 'px';
+      el.style.top  = s.y * SCALE + 'px';
+      updateCoordsTag(el, s);
+      updatePropPanelCoords();
+      updateStatusBar();
+    };
+    const up = () => { document.removeEventListener('mousemove', move); document.removeEventListener('mouseup', up); };
+    document.addEventListener('mousemove', move);
+    document.addEventListener('mouseup', up);
+  });
+  // Resize
+  el.querySelector('.resize-handle').addEventListener('mousedown', e => {
+    e.stopPropagation();
+    const startX = e.clientX, startY = e.clientY, ow = s.w, oh = s.h;
+    const move = ev => {
+      s.w = snap(Math.max(80, ow + (ev.clientX - startX) / SCALE));
+      s.h = snap(Math.max(45, oh + (ev.clientY - startY) / SCALE));
+      el.style.width  = s.w * SCALE + 'px';
+      el.style.height = s.h * SCALE + 'px';
+      updateCoordsTag(el, s);
+      updatePropPanelCoords();
+      updateStatusBar();
+    };
+    const up = () => { document.removeEventListener('mousemove', move); document.removeEventListener('mouseup', up); };
+    document.addEventListener('mousemove', move);
+    document.addEventListener('mouseup', up);
+  });
+  return el;
+}
+
+function updateCoordsTag(el, s) {
+  const ct = el.querySelector('.src-coords');
+  if (ct) ct.textContent = `${s.x},${s.y} ${s.w}×${s.h}`;
+}
+
+function onCanvasClick(e) {
+  if (e.target === document.getElementById('canvas') || e.target.id === 'canvasHint' || e.target.closest('#canvasHint')) {
+    selectSource(null);
+    closePanel();
+  }
+}
+
+function onCanvasDrop(e) {
+  e.preventDefault();
+  const rect = document.getElementById('canvas').getBoundingClientRect();
+  const cx = snap((e.clientX - rect.left) / SCALE - 200);
+  const cy = snap((e.clientY - rect.top)  / SCALE - 112);
+  const s = newSource(cx, cy);
+  sources.push(s);
+  selectedId = s.id;
+  document.getElementById('canvas').appendChild(createSourceEl(s));
+  document.getElementById('canvasHint').style.display = 'none';
+  document.getElementById('builderInfo').textContent = `${sources.length} source(s) | Canvas: ${CANVAS_W}×${CANVAS_H}`;
+  renderLayers();
+  openSrcPanel(s);
+}
+
+function onToolDragStart(e) { e.dataTransfer.setData('type', 'source'); }
+
+// ═══════════════════════════════════════════════════════
+//  SOURCE MANAGEMENT
+// ═══════════════════════════════════════════════════════
+function newSource(x, y) {
+  const n = sources.length;
+  return { id: newId(), label: 'Source ' + (n+1), x: Math.max(0, x||50+n*30), y: Math.max(0, y||50+n*30), w: 400, h: 225, bgColor: '#000000', borderColor: '#ffffff', borderWidth: 0, borderRadius: 0, showCaption: true, captionText: '', captionBg: '#000000cc', captionColor: '#ffffff', captionFont: 'Arial', captionFontSize: 18, captionBorderColor: '#ffffff', captionBorderWidth: 0, captionRadius: 0, captionAnim: 0 };
+}
+
+function addSource() {
+  const s = newSource();
+  sources.push(s);
+  selectedId = s.id;
+  const el = createSourceEl(s);
+  document.getElementById('canvas').appendChild(el);
+  document.getElementById('canvasHint').style.display = 'none';
+  document.getElementById('builderInfo').textContent = `${sources.length} source(s) | Canvas: ${CANVAS_W}×${CANVAS_H}`;
+  renderLayers();
+  openSrcPanel(s);
+}
+
+function selectSource(id) {
+  const prev = document.getElementById('si_' + selectedId);
+  if (prev) { prev.classList.remove('selected'); prev.style.boxShadow = ''; ; prev.querySelector('.src-coords')?.remove(); prev.querySelector('.resize-handle').style.background = '#ffffff33'; }
+  selectedId = id;
+  if (id) {
+    const el = document.getElementById('si_' + id);
+    if (el) { el.classList.add('selected'); el.style.boxShadow = '0 0 0 2px #00d4ff';; el.querySelector('.resize-handle').style.background = '#00d4ff'; }
+    const s = sources.find(s => s.id === id);
+    if (s) openSrcPanel(s);
+    renderLayers();
+  }
+  updateStatusBar();
+}
+
+function deleteSelected() {
+  if (!selectedId) return;
+  sources = sources.filter(s => s.id !== selectedId);
+  document.getElementById('si_' + selectedId)?.remove();
+  selectedId = null;
+  closePanel();
+  renderLayers();
+  document.getElementById('canvasHint').style.display = sources.length ? 'none' : 'flex';
+  document.getElementById('builderInfo').textContent = `${sources.length} source(s) | Canvas: ${CANVAS_W}×${CANVAS_H}`;
+  updateStatusBar();
+}
+
+// ═══════════════════════════════════════════════════════
+//  LAYER LIST
+// ═══════════════════════════════════════════════════════
+function renderLayers() {
+  const list = document.getElementById('layerList');
+  if (!sources.length) { list.innerHTML = '<div class="layers-empty">No sources</div>'; return; }
+  list.innerHTML = '';
+  sources.forEach(s => {
+    const d = document.createElement('div');
+    d.className = 'layer-item' + (s.id === selectedId ? ' selected' : '');
+    d.innerHTML = `<span>📡</span><span>${esc(s.label)}</span>`;
+    d.onclick = () => selectSource(s.id);
+    list.appendChild(d);
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+//  RIGHT PANEL
+// ═══════════════════════════════════════════════════════
+function openSrcPanel(s) {
+  document.getElementById('rightPanel').classList.remove('hidden');
+  document.getElementById('srcPanel').style.display = 'flex';
+  document.getElementById('bgPanel').style.display = 'none';
+  // Fill fields
+  document.getElementById('pp_label').value = s.label;
+  document.getElementById('pp_x').value = s.x;
+  document.getElementById('pp_y').value = s.y;
+  document.getElementById('pp_w').value = s.w;
+  document.getElementById('pp_h').value = s.h;
+  document.getElementById('pp_bgColor').value = s.bgColor;
+  document.getElementById('pp_bgColor_picker').value = s.bgColor;
+  document.getElementById('pp_borderColor').value = s.borderColor || '#ffffff';
+  document.getElementById('pp_borderColor_picker').value = s.borderColor || '#ffffff';
+  document.getElementById('pp_borderWidth').value = s.borderWidth ?? 0;
+  document.getElementById('pp_borderRadius').value = s.borderRadius ?? 0;
+  document.getElementById('pp_showCaption').checked = s.showCaption;
+  document.getElementById('pp_captionText').value = s.captionText;
+  document.getElementById('pp_captionFont').value = s.captionFont;
+  document.getElementById('pp_captionFontSize').value = s.captionFontSize;
+  document.getElementById('pp_captionColor').value = s.captionColor;
+  document.getElementById('pp_captionBg').value = s.captionBg.slice(0,7);
+  document.getElementById('pp_captionBorderColor').value = s.captionBorderColor || '#ffffff';
+  document.getElementById('pp_captionBorderColor_picker').value = s.captionBorderColor || '#ffffff';
+  document.getElementById('pp_captionBorderWidth').value = s.captionBorderWidth ?? 0;
+  document.getElementById('pp_captionRadius').value = s.captionRadius ?? 0;
+  document.getElementById('pp_captionAnim').value = s.captionAnim ?? 0;
+  toggleCaptionFields();
+}
+
+function openBgPanel() {
+  selectedId = null;
+  document.getElementById('rightPanel').classList.remove('hidden');
+  document.getElementById('bgPanel').style.display = 'flex';
+  document.getElementById('srcPanel').style.display = 'none';
+  document.getElementById('bg_color').value = bg.color;
+  document.getElementById('bg_color_picker').value = bg.color;
+  document.getElementById('bg_imageUrl').value = bg.imageUrl;
+  document.getElementById('bg_imageFit').value = bg.imageFit;
+  updateBgPreview();
+  renderLayers();
+}
+
+function closePanel() {
+  document.getElementById('rightPanel').classList.add('hidden');
+  document.getElementById('srcPanel').style.display = 'none';
+  document.getElementById('bgPanel').style.display = 'none';
+}
+
+function toggleCaptionFields() {
+  const show = document.getElementById('pp_showCaption').checked;
+  document.getElementById('captionFields').style.display = show ? 'block' : 'none';
+}
+
+// Property panel update
+function ppUpdate(key, val) {
+  const s = sources.find(s => s.id === selectedId);
+  if (!s) return;
+  s[key] = val;
+  refreshSourceEl(s);
+  renderLayers();
+}
+
+function updatePropPanelCoords() {
+  const s = sources.find(s => s.id === selectedId);
+  if (!s) return;
+  document.getElementById('pp_x').value = s.x;
+  document.getElementById('pp_y').value = s.y;
+  document.getElementById('pp_w').value = s.w;
+  document.getElementById('pp_h').value = s.h;
+}
+
+function refreshSourceEl(s) {
+  const old = document.getElementById('si_' + s.id);
+  if (!old) return;
+  const fresh = createSourceEl(s);
+  old.replaceWith(fresh);
+}
+
+// BG update
+function bgUpdate(key, val) {
+  bg[key] = val;
+  applyCanvasBg();
+  if (key === 'imageUrl') updateBgPreview();
+}
+
+function updateBgPreview() {
+  const row = document.getElementById('bgFitRow');
+  const prev = document.getElementById('bgImgPreview');
+  const img  = document.getElementById('bgPreviewImg');
+  if (bg.imageUrl) {
+    row.style.display = 'block';
+    prev.style.display = 'block';
+    img.src = bg.imageUrl;
+  } else {
+    row.style.display = 'none';
+    prev.style.display = 'none';
+  }
+}
+
+function syncColorPicker(textId, pickerId) {
+  const val = document.getElementById(textId).value;
+  if (/^#[0-9a-fA-F]{6}$/.test(val)) document.getElementById(pickerId).value = val;
+}
+
+// ═══════════════════════════════════════════════════════
+//  STATUS BAR
+// ═══════════════════════════════════════════════════════
+function updateStatusBar() {
+  const el = document.getElementById('statusInfo');
+  const s = sources.find(s => s.id === selectedId);
+  if (s) el.innerHTML = `<span class="sel-info">● ${esc(s.label)}</span> &nbsp; X:${s.x} &nbsp; Y:${s.y} &nbsp; W:${s.w} &nbsp; H:${s.h}`;
+  else el.textContent = 'Click a source to select';
+}
+
+// ═══════════════════════════════════════════════════════
+//  Delete
+// ═══════════════════════════════════════════════════════
+
+async function deleteDbLayout(deleteId) {
+  if (!confirm("Are you sure you want to delete this layout?")) return;
+  try {
+    let payload = "id="+deleteId;
+    const res = await fetch('https://uatapi2.janya.video/pcr/v1/windows/delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: payload
+    });
+    const json = await res.json();
+    if (json.summary?.id === 1) {
+      showToast("Layout Deleted Successfully");
+      dbLayouts = dbLayouts.filter(l => l.id !== deleteId);
+      filterDbLayouts();
+    } else {
+      showToast(json.summary?.description || "Delete failed", "err");
+    }
+  } catch (e) {
+    showToast("Delete API error: " + e.message, "err");
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  SAVE
+// ═══════════════════════════════════════════════════════
+function openSaveDialog() {
+  document.getElementById('saveNameInput').value = editingName || '';
+  document.getElementById('saveOverlay').classList.add('show');
+  setTimeout(() => document.getElementById('saveNameInput').focus(), 100);
+}
+function closeSaveDialog() { document.getElementById('saveOverlay').classList.remove('show'); }
+function onSaveKey(e) { if (e.key === 'Enter') confirmSave(); if (e.key === 'Escape') closeSaveDialog(); }
+function confirmSave() {
+  const name = document.getElementById('saveNameInput').value.trim();
+  if (!name) return;
+  const groupName = document.getElementById('builderGroupName').value.trim();
+  const id = editingId || ('tpl_' + Date.now());
+  const tpl = { id, name, groupName, sources: sources.map(({id:_,...rest}) => rest), bg: {...bg}, updatedAt: Date.now() };
+  const ok = saveToStorage(tpl);
+  if (ok) {
+    editingId = id;
+    editingName = name;
+    document.getElementById('builderTitleText').textContent = name;
+    showToast('✓ Saved "' + name + '"');
+  } else { showToast('Save failed', 'err'); }
+  closeSaveDialog();
+}
+
+// ═══════════════════════════════════════════════════════
+//  Add to DB
+// ═══════════════════════════════════════════════════════
+async function addToDb() {
+  const groupName = document.getElementById('builderGroupName').value.trim();
+  const captionName = document.getElementById('builderCaptionName').value.trim();
+  if (!groupName || !captionName) {
+    showToast('Group name and caption name required', 'err');
+    return;
+  }
+  const mixList = sources.map((s, i) => ({
+    count: i + 1,
+    LocationX: Math.round(s.x),
+    LocationY: Math.round(s.y),
+    ImageWidth: Math.round(s.w),
+    ImageHeight: Math.round(s.h),
+    BackGroundColor: (s.bgColor || '#000000').replace('#','0x'),
+    BorderColor: (s.borderColor || '#000000').replace('#','0x'),
+    BorderWidth: s.borderWidth || 0,
+    BorderRadius: s.borderRadius || 0
+  }));
+
+  const wmList = sources.map((s, i) => {
+    const show = s.showCaption;
+    return {
+      count: i + 1,
+      LocationX: s.x ? Math.round(s.x) : 0,
+      LocationY:  (s.y + s.h) ? Math.round(s.y + s.h) : 0,
+      WaterMarkWidth: s.w ? Math.round(s.w) : 0,
+      WaterMarkHeight: s.captionFontSize ? Math.round(s.captionFontSize * 2) : 0,
+      Text: s.captionText || s.label || '',
+      FontColor: (s.captionColor || '#000000').replace('#','0x'),
+      FontSize: String(s.captionFontSize || 22),
+      BackGroundColor: (s.captionBg || '#FFFFFF').replace('#','0x').substring(0,8),
+      BorderColor: (s.captionBorderColor || '#000000').replace('#','0x'),
+      BorderWidth: s.captionBorderWidth || 0,
+      BorderRadius: s.captionRadius || 0,
+      Animation: s.captionAnim || 0,
+      FontFamily: s.captionFont || 'Arial',
+      ShowCaption:s.showCaption || false
+    };
+  });
+
+  const pubnubMsg = JSON.stringify({
+    MixLayoutList: mixList,
+    WaterMarkList: wmList
+  });
+
+  const payload = {
+    data: [
+      {
+        id: 0,
+        cid: 2,
+        caption: captionName,
+        windowsCount: sources.length,
+        groupName: groupName,
+        pubnubMsg: pubnubMsg,
+        isTransition: 0,
+        isSecondary: 0,
+        isBG: 0,
+        transitionVideo: "",
+        bgVideo: "",
+        secondaryPlayMode: ""
+      }
+    ]
+  };
+  console.log('Payload for DB add:', payload);
+  try {
+    const res = await fetch('https://uatapi2.janya.video/pcr/v1/windows/add', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const json = await res.json();
+    if (json.summary?.id === 1) {
+      showToast('Template added successfully');
+      goToDashboard();
+    } else {
+      throw new Error(JSON.stringify(json));
+    }
+  } catch (e) {
+    showToast('Add failed: ' + e.message, 'err');
+  }
+}
+
+
+// ═══════════════════════════════════════════════════════
+//  UTILS
+// ═══════════════════════════════════════════════════════
+function esc(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+
+// ═══════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+  renderDashboard();
+  showView('dashboard');
+  document.getElementById('jsonModal').addEventListener('click', e => {
+    if (e.target === document.getElementById('jsonModal')) closeJsonModal();
+  });
+});
+</script>
+</body>
+</html>

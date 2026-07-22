@@ -1,0 +1,97 @@
+[HttpPost("presigned-url")]
+public async Task<IActionResult> GenerateS3PresignedUrlAsync(
+    [FromHeader(Name = "Channel-Id")] long cid,
+    PresignRequest request)
+{
+    try
+    {
+        if (request.Files is null || request.Files.Count == 0)
+            return BadRequest(JanyaApiResponse.Error("No files provided"));
+
+        var channel = await channelRepo.GetByIdAsync(cid);
+        if (channel is null)
+            return BadRequest(JanyaApiResponse.Error("Channel not found"));
+
+        string bucketName;
+        string folderPrefix;
+        S3Credentials s3Credentials;
+
+        if (request.AssetType == AssetType.ProducerEventThumbnail)
+        {
+            var masterInfoResponse = await GetMasterInfoAsync("s3-metadata-bucket");
+            if (masterInfoResponse is not OkObjectResult master)
+                return BadRequest(JanyaApiResponse.Error("Metadata not found"));
+            dynamic info = master.Value!;
+            if (info.code != 1)
+                return BadRequest(JanyaApiResponse.Error("Metadata not found"));
+
+            var s3Meta = info.masterInfo["s3-metadata-bucket"];  // adjust key to actual property name
+
+            bucketName   = s3Meta.BucketName;
+            folderPrefix = $"producer/{channel.CName}/thumbnails/";
+            s3Credentials = new() { AccessKeyId = s3Meta.AccessKey, SecretAccessKey = s3Meta.SecretKey, Region = s3Meta.Region };
+        }
+        else
+        {
+            var parts     = channel.CS3BucketName.Split('/');
+            var subfolder = parts.Length == 1 ? string.Empty : parts[1] + "/";
+
+            bucketName   = parts[0];
+            folderPrefix = request.AssetType == AssetType.MAMPrimary
+                ? $"{subfolder}videos/"
+                : $"{subfolder}graphics/";
+
+            s3Credentials = new() { AccessKeyId = channel.CS3BucketKeyID, SecretAccessKey = channel.CS3BucketKeySecret, Region = channel.CS3BucketRegion };
+        }
+
+        var result = request.Files.Select(file =>
+        {
+            var key = folderPrefix + file.FileName;
+            var url = s3Service.GeneratePresignedUrl(s3Credentials, bucketName, key, file.FileType);
+            return new { file.FileName, key, url };
+        }).ToList();  // materialize inside try so exceptions are caught here
+
+        return Ok(JanyaApiResponse.Success(data: result));
+    }
+    catch (Exception ex)
+    {
+        _log.Error("GenerateS3PresignedUrlAsync(): " + ex.ToString());
+        return BadRequest(JanyaApiResponse.Error(""));
+    }
+}
+
+
+using Amazon.S3;
+using Amazon.S3.Model;
+
+namespace JanyaApi.Services;
+
+public class S3Service
+{
+    public string GeneratePresignedUrl(S3Credentials credentials, string bucketName, string key, string contentType)
+    {
+        using var s3Client = new AmazonS3Client(
+            credentials.AccessKeyId,
+            credentials.SecretAccessKey,
+            Amazon.RegionEndpoint.GetBySystemName(credentials.Region)
+        );
+
+        var request = new GetPreSignedUrlRequest
+        {
+            BucketName  = bucketName,
+            Key         = key,
+            Verb        = HttpVerb.PUT,
+            Expires     = DateTime.UtcNow.AddMinutes(15),
+            ContentType = contentType,
+        };
+
+        return s3Client.GetPreSignedURL(request);
+    }
+}
+
+public class S3Credentials
+{
+    public string AccessKeyId     { get; init; } = string.Empty;
+    public string SecretAccessKey { get; init; } = string.Empty;
+    public string Region          { get; init; } = string.Empty;
+}

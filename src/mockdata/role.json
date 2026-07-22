@@ -1,0 +1,173 @@
+{
+    "code": 1,
+    "Message": "Success",
+    "id": 0,
+    "data": {
+        "role": {
+            "id": 1,
+            "name": "Super Admin",
+            "created_at": 1677151346918,
+            "updated_at": 1772173951184,
+            "description": "Janya_Dev",
+            "role_status": true,
+            "is_default_role": false,
+            "org_id": 2,
+            "is_display": true
+        },
+        "modulesWithFeatures": [
+            {
+                "module": "MAM",
+                "features": "VIEW_ASSETS,EDIT_ASSET,DELETE_ASSET,MOVE_ASSET,PREVIEW,DOWNLOAD_PROXY,UPLOAD_POSTER,PUBLISH_HLS,PORTRAIT_VIDEO,PUBLISH,UPLOAD_ASSET,REPROCESS_ASSET,EXPORT,VIDEOGRAPH,AUDITS,LIBRARY,EDIT_VIDEO GRAPH,VIEW_SOURCE AUDIT,EDIT_SOURCE AUDIT,QC_ASSET,AUTO_SCHEDULER,PUBLISH_AS LIVE,DOWNLOAD_HIGHRES,GetMPEGTSIncomingList,ADMIN_API,AWSSNS_API,CHANNEL_API,CHART_API,CLOUDINSTANCE_API,CONNECTIVITY_API,DISTRIBUTION_API,DRC_API,EMAILNOTIFICATION_API,GATEWAY_API,IPL_API,JANYAAUTH_API,JANYACP1_API,JANYAGWT1_API,JANYAPLAN_API,JAUTH_API,MAM_API,MONITORING_API,OAUTH_API,PCRPUBLISHER_API,PLAYOUT_API,PRODUCER_API,PRODUCEREVENT_API,SCHEDULE_API,SCHEDULECONTROLLER_API,SETTING_API,TOKEN_API,TUTORIAL_API,UPLOADER_API,VIDEOGRAPH_API,FORTEST_API,MULTIPLEUSER_API"
+            },
+            {
+                "module": "Graphics",
+                "features": "VIEW_TEMPLATES,EDIT_TEMPLATE,DELETE_SAVED_TEMPLATE,SAVED TEMPLATES,TEMPLATES"
+            },
+            {
+                "module": "Schedule",
+                "features": "CREATE_SCHEDULE_PLAYLIST,EDIT_SCHEDULE_PLAYLIST,DELETE_SCHEDULE_PLAYLIST,MODIFY_SECONDARY_PLAYLIST,MODIFY_SCHEDULE_PLAYLIST,DUPLICATE_SCHEDULE_PLAYLIST,VIEW_SCHEDULE_PLAYLISTS,DEFAULT_SEGMENT,AUTO_GENERATED PLAYLISTS,APPLY_RULES,EXPORT,ADD_LIVE SOURCE,EDIT_PUBLISH,SCHEDULE_MASTER,SCHEDULE_PLAYLIST,AI_SCHEDULE PLAYLIST,VIEW_AI_BUILDER,EDIT_AI_BUILDER"
+            },
+            {
+                "module": "Playout",
+                "features": "LOAD_PLAYLIST,MODIFY_PLAYLIST,EDIT_PLAYLIST_ITEM,DELETE_PLAYLIST_ITEM,MODIFY_SECONDARY_PLAYLIST,RECACHE,FORCE_LIVE,SCHEDULE_LIVE,VIEW_PLAYOUT,SCTE,FIND_AND REPLACE,LOOP_PLAYLIST,LOOP_ASSET,FORCE_REFRESH,ASRUN,INSTANT_PLAY,INSTANT_QUEUE,EXPORT,GLOBAL_GFX,DEFAULT_SEGMENT,SKIP_ASSET,ASRUN_API,COMPAREASRUN,FCT,NON FCT,USER VIEW,FORCE CONTROL,COMPAREASRUN NW18,FCT OR FILLERS,USER WRITE"
+            },
+            {
+                "module": "Live",
+                "features": "VIEW_LIVE_SOURCES,ADD_GRAPHICS,PUSH_TO_PROGRAM,LSG,RECORD,STOP_LIVE,MANUAL SCTE,FORCE LIVE ON,READ ONLY"
+            },
+            {
+                "module": "People",
+                "features": "VIEW_PEOPLE,ADD_OR_INVITE_PEOPLE,CHANGE_PEOPLE_ROLE,ENABLE_OR_DISABLE_USER,ASSIGN_MULTIPLE_ROLES"
+            },
+            {
+                "module": "Role",
+                "features": "VIEW_ROLES,MANAGE_ROLES"
+            },
+            {
+                "module": "Channel Configuration",
+                "features": "VIEW_CHANNEL_CONFIGURATION,UPDATE_CHANNEL_CONFIGURATION"
+            },
+            {
+                "module": "Asrun",
+                "features": "VIEW_ASRUN"
+            },
+            {
+                "module": "Status",
+                "features": "VIEW_STATUS"
+            },
+            {
+                "module": "Player",
+                "features": "VIEW_PLAYER"
+            },
+            {
+                "module": "Ingest",
+                "features": "INGEST"
+            },
+            {
+                "module": "Monitor",
+                "features": "VIEW_MONITOR"
+            },
+            {
+                "module": "Group",
+                "features": "VIEW_GROUP"
+            },
+            {
+                "module": "Reports",
+                "features": "VIEW_REPORTS,YOUTUBE_ANALYTICS"
+            },
+            {
+                "module": "Multi Viewer",
+                "features": "VIEW_MULTI VIEWER"
+            },
+            {
+                "module": "EPG",
+                "features": "VIEW_EPG,EDIT_EPG,EDIT_EPG_CONFIG,VIEW_EPG_CONFIG"
+            },
+            {
+                "module": "Sources",
+                "features": "VIEW_SOURCES,SWITCH_SOURCES,SOURCE-OUTPUT"
+            },
+            {
+                "module": "Source Audit",
+                "features": "VIEW_SOURCE_AUDIT"
+            },
+            {
+                "module": "Publish",
+                "features": "VIEW_PUBLISH"
+            },
+            {
+                "module": "Cloud Instance",
+                "features": "VIEW_INSTANCE,EDIT_INSTANCE"
+            },
+            {
+                "module": "Settings",
+                "features": "VIEW_ACCOUNT,EDIT_ACCOUNT,VIEW_SERVER_CONFIG,EDIT_SERVER_CONFIG,VIEW_PEOPLE,EDIT_PEOPLE,VIEW_GROUP,EDIT_GROUP,VIEW_PROFILE_MASTER,EDIT_PROFILE_MASTER,VIEW_PRE_POST_ROLL,EDIT_PRE_POST_ROLL,VIEW_GRAPHICS_RULES,EDIT_GRAPHICS_RULES,VIEW_CATEGORY,EDIT_CATEGORY"
+            },
+            {
+                "module": "Ipl",
+                "features": "EDIT_IPL,VIEW_IPL"
+            },
+            {
+                "module": "Gateway",
+                "features": "VIEW_GATEWAY,EDIT_GATEWAY,VIEW_APPLICATION,EDIT_APPLICATION,VIEW_INPUT,EDIT_INPUT,VIEW_OUTPUT,EDIT_OUTPUT,VIEW_RTMP_INPUT,EDIT_RTMP_INPUT,VIEW_RTMP_OUTPUT,EDIT_RTMP_OUTPUT,VIEW_TRANSCODER,EDIT_TRANSCODER,VIEW_MPEGTS,EDIT_MPEGTS,VIEW_GATEWAY_CONFIG,EDIT_GATEWAY_CONFIG,VIEW_GATEWAY_REPORT,EDIT_GATEWAY_REPORT"
+            },
+            {
+                "module": "Admin Dashboard",
+                "features": "VIEW_ADMIN_DASHBOARD,EDIT_ADMIN_DASHBOARD"
+            },
+            {
+                "module": "Salvo",
+                "features": "VIEW_SALVO"
+            },
+            {
+                "module": "Monitor_Analytics",
+                "features": "VIEW_MONITOR  ANALYTICS"
+            },
+            {
+                "module": "Dashboard",
+                "features": "VIEW_DASHBOARD"
+            },
+            {
+                "module": "Rules",
+                "features": "VIEW_GRAPHIC_RULES"
+            },
+            {
+                "module": "Channel Mapping",
+                "features": "VIEW_CHANNEL MAPPING"
+            },
+            {
+                "module": "PCR",
+                "features": "VIEW_PCR,EDIT_PCR,MCR,NRCS"
+            },
+            {
+                "module": "Song",
+                "features": "VIEW_SONG"
+            },
+            {
+                "module": "Category",
+                "features": "VIEW_CATEGORY,MANAGE_CATEGORY"
+            },
+            {
+                "module": "Scte-Triggers",
+                "features": "VIEW_SCTE TRIGGERS"
+            },
+            {
+                "module": "Playlist Builder",
+                "features": "EDIT_PLAYLIST_BUILDER,VIEW_PLAYLIST_BUILDER"
+            },
+            {
+                "module": "Flow Chart",
+                "features": "VIEW_FLOWCHART,EDIT_FLOWCHART"
+            },
+            {
+                "module": "OTT",
+                "features": "OTT_VOD_VIEW,OTT_VOD_EDIT"
+            },
+            {
+                "module": "Alarm History",
+                "features": "VIEW_ALARM HISTORY,EDIT ALARM HISTORY,VIEW_ALARM_CONFIG,EDIT_ALARM_CONFIG"
+            }
+        ],
+        "isAdminUser": true
+    }
+}

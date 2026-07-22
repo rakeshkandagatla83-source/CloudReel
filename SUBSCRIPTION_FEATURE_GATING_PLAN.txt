@@ -1,0 +1,169 @@
+SUBSCRIPTION FEATURE GATING - IMPLEMENTATION PLAN
+=================================================
+
+CONTEXT
+-------
+
+The `SubscriptionPlansPage` already exists and handles plan display, subscribe (Recurly redirect), and cancel. There is NO global subscription state - plan data lives only in that page's local state and is discarded on unmount.
+
+The goal is to enforce plan-based feature limits across the app:
+  - No subscription → show subscribe modal when user tries a gated action
+  - Limit reached → show upgrade modal when user hits their quota
+
+
+PLAN LIMITS
+-----------
+
+Plan                                      Meeting Hours    Platforms    Uploads/month
+Starter (pcr-starter-30h)                 30h              2            30
+Professional (pcr-professional-60h)       60h              4            60
+Enterprise (pcr-enterprise-90h)           90h              6            90
+
+Usage resets per billing cycle (subscription's current_term_started_at).
+
+
+FEATURES TO GATE
+----------------
+
+1. Studio page - max platforms selectable for Go Live
+2. Publish / Social page - max platforms selectable for Go Live
+3. Events page - creating/starting a meeting when hours limit reached
+4. MAM: Publish action - if publish count for billing cycle is at limit
+5. MAM: Upload action - if upload count for billing cycle is at limit
+
+Gate style: UI-level only (no route blocking). Gated actions show a modal:
+  - No plan → "Subscribe to use this feature" + CTA to /subscription-plans
+  - Limit reached → "You've used X of Y [feature] this period. Upgrade for more." + CTA to /subscription-plans
+
+
+ARCHITECTURE
+============
+
+GLOBAL SUBSCRIPTION CONTEXT
+---------------------------
+
+Create src/features/subscription/SubscriptionContext.tsx:
+  - Wraps the authenticated app (inside ProtectedRoute's outlet or in ProtectedRoute itself)
+  - On mount: fetches v1/recurly/subscription/{gatewayId} and v1/recurly/subscriptionplans?product=pcr
+  - gatewayId = ${channelName}_${channelId} from storage (same as SubscriptionPlansPage)
+  - Derives and exposes:
+      * isSubscribed: boolean
+      * activePlanCode: string | null
+      * planLimits: { maxPlatforms: number; maxUploads: number; maxMeetingHours: number } | null
+      * billingPeriodStart: Date | null (from subscription.current_term_started_at)
+      * billingPeriodEnd: Date | null (from subscription.current_term_ends_at)
+  - Parse limits from plan description string (e.g. "30 Hours - Live meetings, ...") using the same logic already used in PlanCard.features
+
+Create src/features/subscription/useSubscription.ts:
+  - Simple useContext(SubscriptionContext) wrapper
+
+
+PLAN LIMIT PARSING
+------------------
+
+The plan description is a comma-separated string like:
+  "30 Hours - Live meetings, 30 Hours - Go Live simultaneously on 2 Platforms, 30 - Uploads to Platforms"
+
+Parse this to extract maxMeetingHours, maxPlatforms, maxUploads using regex on the plan matching activePlanCode.
+
+
+USAGE HOOKS (lazy, fetched by each feature)
+--------------------------------------------
+
+Reuse existing fetchPublishHistory() and formatDuration() from src/lib/publishHistoryService.ts.
+
+Distinguishing uploads vs live sessions (resolved):
+  - outputMode.toLowerCase().includes('vod') = upload/VOD record
+  - Live/Go Live records have platform names in outputMode (e.g. "youtube", "facebook") but NOT 'vod'
+
+Meeting duration (resolved with caveat):
+  - CalendarEvent only has startDateTime and endDateTime (scheduled Unix timestamps)
+  - No actual session duration field exists in the API response
+  - Use endDateTime - startDateTime for completed events (endDateTime <= now) as a proxy
+  - Confirm with backend if an actual-duration field exists
+
+useUploadUsage() [src/features/subscription/useUploadUsage.ts]:
+  - Calls fetchPublishHistory() (reuse from src/lib/publishHistoryService.ts) with billing period dates
+  - Counts records where record.outputMode.toLowerCase().includes('vod') = true
+  - Returns { used: number; limit: number; isAtLimit: boolean; loading: boolean }
+
+useMeetingHoursUsage() [src/features/subscription/useMeetingHoursUsage.ts]:
+  - Calls events API for each month in the billing cycle
+  - Sums endDateTime - startDateTime (seconds) for events where endDateTime <= now
+  - Converts total seconds to hours
+  - Returns { hoursUsed: number; limit: number; isAtLimit: boolean; loading: boolean }
+
+usePublishUsage() [src/features/subscription/usePublishUsage.ts]:
+  - Calls fetchPublishHistory() with billing period dates
+  - Counts records where !record.outputMode.toLowerCase().includes('vod') (live/social streams)
+  - Returns { used: number; limit: number; isAtLimit: boolean; loading: boolean }
+
+
+FILES TO CREATE
+===============
+
+src/features/subscription/SubscriptionContext.tsx     Global context + provider
+src/features/subscription/useSubscription.ts          Context consumer hook
+src/features/subscription/useUploadUsage.ts           Upload quota hook
+src/features/subscription/usePublishUsage.ts          Publish/Go Live quota hook
+src/features/subscription/useMeetingHoursUsage.ts     Meeting hours quota hook
+src/components/ui/UpgradeModal.tsx                    Subscribe/upgrade gate modal
+
+
+FILES TO MODIFY
+===============
+
+src/components/ProtectedRoute.tsx              Wrap outlet with <SubscriptionProvider>
+src/pages/SubscriptionPlansPage.tsx            Remove local subscription fetch; consume useSubscription() context instead (avoids double-fetch)
+Studio Go Live component                       Use planLimits.maxPlatforms from context to cap platform selection
+Publish/Social Go Live component               Same cap on platform selection
+src/features/events/useEvents.ts               Check useMeetingHoursUsage before saveEvent for new events
+MAM upload component                           Check useUploadUsage before upload
+MAM publish component                          Check usePublishUsage before publish
+
+Note: Exact file paths for Studio/Publish/MAM Go Live trigger components resolved at implementation start by grepping for handleGoLive.
+
+
+UPGRADE MODAL DESIGN
+====================
+
+  ┌──────────────────────────────────────────┐
+  │  🔒  Feature Locked                 [X]  │
+  │                                          │
+  │  [variant: no-plan]                      │
+  │  You need an active subscription to      │
+  │  use Go Live.                            │
+  │                                          │
+  │  [variant: limit-reached]                │
+  │  You've used 30 of 30 uploads this       │
+  │  billing period (resets Jan 5).          │
+  │                                          │
+  │  ████ Starter  ░░░░ Pro  ░░░░ Enterprise│
+  │  (shows plan comparison strip)           │
+  │                                          │
+  │         [Keep Plan]  [View Plans →]      │
+  └──────────────────────────────────────────┘
+
+  - Uses @radix-ui/react-dialog (already in codebase)
+  - Matches existing CancelDialog style from SubscriptionPlansPage
+  - "View Plans →" navigates to /subscription-plans
+
+
+VERIFICATION PLAN
+=================
+
+1. Context: Log activePlanCode and planLimits in dev; verify they match the channel's actual subscription in Recurly
+2. No subscription: Remove pcr_channel_id and try gated actions - should show subscribe modal
+3. Platform cap (Studio): With Starter plan, verify only 2 platforms can be selected for Go Live; 3rd is disabled
+4. Upload cap (MAM): Manually exhaust upload count in API response; verify modal appears before next upload
+5. Events cap: Same for meeting hours
+6. Upgrade CTA: Clicking "View Plans" navigates to /subscription-plans
+
+
+OPEN ITEMS
+==========
+
+1. [RESOLVED] Publish history record type fields - outputMode.toLowerCase().includes('vod') = upload; absence = live/Go Live.
+2. Events session duration - Partially resolved: using endDateTime - startDateTime as proxy. Confirm with backend if an actual-duration field exists.
+3. Studio + Publish Go Live component locations - Resolved at implementation start by grepping for handleGoLive.
+4. MAM component locations - Resolved at implementation start by reading src/pages/AssetsPage.tsx.
