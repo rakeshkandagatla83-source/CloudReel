@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Instagram, Facebook, Youtube, Linkedin, ArrowRight, Check } from 'lucide-react'
 
 const FOOTER_NAV = {
@@ -71,10 +72,10 @@ export function LandingFooter() {
 
   return (
     <footer id="landing-footer" className="bg-[#060B14] text-white border-t border-white/10 pt-16 lg:pt-24 pb-12 overflow-hidden font-sans">
-      <div className="mx-auto max-w-[1180px] px-6 lg:px-8">
-        
-        {/* Top 4-Column Navigation & Newsletter Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-10 pb-16 border-b border-white/15">
+      
+      {/* 1. Top 4-Column Navigation & Newsletter Grid (Centered in max-w-1180px) */}
+      <div className="mx-auto max-w-[1180px] px-6 lg:px-8 pb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-10">
           
           {/* Products Col */}
           <div>
@@ -199,39 +200,38 @@ export function LandingFooter() {
             </div>
           </div>
         </div>
-
-        {/* Massive Outlined Brand Logo (User's Official CR CloudReel Logo in Brand Gradient End-to-End) */}
-        <div className="py-10 lg:py-14 border-b border-white/15 w-full flex items-center justify-center">
-          <div 
-            className="w-full h-24 sm:h-36 md:h-48 lg:h-56 bg-brand-grad opacity-85 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
-            style={{
-              WebkitMaskImage: "url('/images/CloudReel-outline-alpha.png')",
-              maskImage: "url('/images/CloudReel-outline-alpha.png')",
-              WebkitMaskSize: 'contain',
-              maskSize: 'contain',
-              WebkitMaskRepeat: 'no-repeat',
-              maskRepeat: 'no-repeat',
-              WebkitMaskPosition: 'center',
-              maskPosition: 'center',
-            }}
-          />
-        </div>
-
-        {/* Bottom Bar: Operational Status & Legal */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-slate-400">
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-sm shadow-emerald-400/50" />
-            <span className="text-slate-200 font-semibold">All systems operational</span>
-          </div>
-
-          <div className="flex items-center gap-6 text-slate-300">
-            <a href="#" className="hover:text-white transition-colors">Privacy policy</a>
-            <a href="#" className="hover:text-white transition-colors">Terms of service</a>
-            <span className="text-slate-400">© 2026 CloudReel</span>
-          </div>
-        </div>
-
       </div>
+
+      {/* 2. Full-Bleed 100% Width Big Footer Logo (Edge-to-Edge Screen Width) */}
+      <div className="w-full border-y border-white/15 py-12 lg:py-16 px-4 sm:px-8 lg:px-12 flex items-center justify-center overflow-hidden">
+        <Link 
+          to="/" 
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="w-full flex items-center justify-center group"
+          aria-label="Back to home"
+        >
+          <img 
+            src="/images/footerlogo.svg" 
+            alt="CloudReel" 
+            className="w-full h-auto max-h-[220px] md:max-h-[300px] lg:max-h-[380px] object-contain opacity-20 group-hover:opacity-65 transition-all duration-500 select-none cursor-pointer group-hover:scale-[1.005]" 
+          />
+        </Link>
+      </div>
+
+      {/* 3. Full-Bleed 100% Width Operational Status & Legal Bar */}
+      <div className="w-full pt-8 px-6 sm:px-12 lg:px-16 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-slate-400">
+        <div className="flex items-center gap-2.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-sm shadow-emerald-400/50" />
+          <span className="text-slate-200 font-semibold">All systems operational</span>
+        </div>
+
+        <div className="flex items-center gap-6 text-slate-300">
+          <a href="#" className="hover:text-white transition-colors">Privacy policy</a>
+          <a href="#" className="hover:text-white transition-colors">Terms of service</a>
+          <span className="text-slate-400">© 2026 CloudReel</span>
+        </div>
+      </div>
+
     </footer>
   )
 }
