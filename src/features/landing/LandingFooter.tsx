@@ -200,40 +200,21 @@ export function LandingFooter() {
           </div>
         </div>
 
-        {/* Massive Outlined Brand Logo (CR Symbol + CloudReel Text - 100% Width) */}
-        <div className="py-12 lg:py-16 border-b border-white/15 flex items-center justify-center">
-          <svg className="w-full h-auto max-h-[180px] overflow-visible select-none" viewBox="0 0 1050 160" fill="none">
-            <defs>
-              <linearGradient id="footerBrandOutlineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#D300EA" />
-                <stop offset="50%" stopColor="#8B5CF6" />
-                <stop offset="100%" stopColor="#3B38D0" />
-              </linearGradient>
-            </defs>
-
-            {/* CR Logo Icon Outline */}
-            <g transform="translate(10, 10) scale(5.8)">
-              <path 
-                d="M22.74,19.02h-3.94c-.09,0-.17-.04-.22-.12l-2.22-3.31c-.06-.09-.06-.22.01-.31l1.01-1.28c.05-.06.13-.1.21-.1.15,0,.39,0,.53,0,.75,0,1.36-.52,1.36-1.17s-.61-1.15-1.36-1.17c-.75-.02-1.26.72-1.28.77l-1.96,2.63-.66.89s-1.48,2.03-4.01,2.78c-.77.26-1.61.38-2.47.35-3.63-.13-6.6-3.09-6.74-6.72-.16-4,3.04-7.3,7.01-7.3,2.37,0,4.47,1.18,5.74,2.99.09.12.07.29-.04.39-.07.07-.14.13-.21.2,0,0,0,0,0-.01-.69.64-1.2,1.43-1.93,2.48-.12.18-.4.14-.46-.06-.45-1.35-1.76-2.31-3.28-2.23-1.69.1-3.04,1.5-3.06,3.19-.03,1.82,1.44,3.31,3.25,3.31,0,0,0,0,.01,0,0,0,0,0,0,0,0,0,.01,0,.02,0,0,0,0,0,.01,0,.03,0,.08,0,.13,0,0,0,.01,0,.02,0,.03,0,.06,0,.1,0,0,0,.02,0,.03,0,.05,0,.1-.01.16-.02.02,0,.04,0,.06,0,.01,0,.03,0,.04,0,.01,0,.02,0,.04,0,.01,0,.02,0,.04,0,.05,0,.1-.02.16-.03.87-.18,2.25-.68,3.23-2.04,1.11-1.53,1.69-2.59,2.57-3.4,0,0,0,0,0,.01.84-.85,2.09-1.39,3.48-1.39,2.52,0,4.55,1.75,4.55,3.91,0,1.24-.68,2.35-1.73,3.07-.12.08-.15.25-.07.36l2.07,2.94c.12.17,0,.41-.21.41Z"
-                stroke="url(#footerBrandOutlineGrad)"
-                strokeWidth="0.6"
-                fill="none"
-              />
-            </g>
-
-            {/* CloudReel Text Outline */}
-            <text
-              x="165"
-              y="52%"
-              dominantBaseline="central"
-              stroke="url(#footerBrandOutlineGrad)"
-              strokeWidth="2.5"
-              fill="none"
-              className="font-black tracking-tight uppercase text-[125px] font-sans opacity-80 hover:opacity-100 transition-opacity duration-300"
-            >
-              CloudReel
-            </text>
-          </svg>
+        {/* Massive Outlined Brand Logo (User's Official CR CloudReel Logo in Brand Gradient End-to-End) */}
+        <div className="py-10 lg:py-14 border-b border-white/15 w-full flex items-center justify-center">
+          <div 
+            className="w-full h-24 sm:h-36 md:h-48 lg:h-56 bg-brand-grad opacity-85 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
+            style={{
+              WebkitMaskImage: "url('/images/CloudReel-outline-alpha.png')",
+              maskImage: "url('/images/CloudReel-outline-alpha.png')",
+              WebkitMaskSize: 'contain',
+              maskSize: 'contain',
+              WebkitMaskRepeat: 'no-repeat',
+              maskRepeat: 'no-repeat',
+              WebkitMaskPosition: 'center',
+              maskPosition: 'center',
+            }}
+          />
         </div>
 
         {/* Bottom Bar: Operational Status & Legal */}
