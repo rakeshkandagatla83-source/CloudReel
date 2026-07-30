@@ -70,15 +70,15 @@ export function LandingFooter() {
   ]
 
   return (
-    <footer id="landing-footer" className="bg-[#060B14] text-white border-t border-white/10 pt-16 lg:pt-24 pb-8 overflow-hidden font-sans">
+    <footer id="landing-footer" className="bg-[#0B0F19] text-[#F8FAFC] border-t border-slate-800/80 pt-16 lg:pt-24 pb-12 overflow-hidden font-sans">
       <div className="mx-auto max-w-[1180px] px-6 lg:px-8">
         
         {/* Top 4-Column Navigation & Newsletter Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-10 pb-16 border-b border-white/10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-10 pb-16 border-b border-slate-800/80">
           
           {/* Products Col */}
           <div>
-            <h4 className="text-sm font-semibold text-white mb-5 tracking-tight">
+            <h4 className="text-base font-bold text-white mb-5 tracking-tight">
               Products
             </h4>
             <ul className="space-y-3">
@@ -86,7 +86,7 @@ export function LandingFooter() {
                 <li key={link.label}>
                   <a
                     href={link.href}
-                    className="text-xs font-mono text-white/50 hover:text-white transition-colors duration-200"
+                    className="text-xs font-mono text-slate-400 hover:text-white transition-colors duration-200"
                   >
                     {link.label}
                   </a>
@@ -97,7 +97,7 @@ export function LandingFooter() {
 
           {/* Resources Col */}
           <div>
-            <h4 className="text-sm font-semibold text-white mb-5 tracking-tight">
+            <h4 className="text-base font-bold text-white mb-5 tracking-tight">
               Resources
             </h4>
             <ul className="space-y-3">
@@ -105,7 +105,7 @@ export function LandingFooter() {
                 <li key={link.label}>
                   <a
                     href={link.href}
-                    className="text-xs font-mono text-white/50 hover:text-white transition-colors duration-200"
+                    className="text-xs font-mono text-slate-400 hover:text-white transition-colors duration-200"
                   >
                     {link.label}
                   </a>
@@ -116,7 +116,7 @@ export function LandingFooter() {
 
           {/* Company Col */}
           <div>
-            <h4 className="text-sm font-semibold text-white mb-5 tracking-tight">
+            <h4 className="text-base font-bold text-white mb-5 tracking-tight">
               Company
             </h4>
             <ul className="space-y-3">
@@ -124,7 +124,7 @@ export function LandingFooter() {
                 <li key={link.label}>
                   <a
                     href={link.href}
-                    className="text-xs font-mono text-white/50 hover:text-white transition-colors duration-200"
+                    className="text-xs font-mono text-slate-400 hover:text-white transition-colors duration-200"
                   >
                     {link.label}
                   </a>
@@ -136,10 +136,10 @@ export function LandingFooter() {
           {/* Newsletter & Socials Col */}
           <div className="space-y-6">
             <div>
-              <h4 className="text-sm font-semibold text-white mb-2 leading-snug">
+              <h4 className="text-base font-bold text-white mb-2 leading-snug">
                 Sign up for our newsletter to stay up to date
               </h4>
-              <p className="text-xs font-mono text-white/40">
+              <p className="text-xs font-mono text-slate-400">
                 Get the latest CloudReel updates, features, and release notes.
               </p>
             </div>
@@ -152,7 +152,7 @@ export function LandingFooter() {
                   placeholder="Your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-lg bg-white/5 border border-white/15 text-xs font-mono text-white placeholder:text-white/30 focus:outline-none focus:border-brand-indigo focus:ring-1 focus:ring-brand-indigo transition-all"
+                  className="w-full px-4 py-2.5 rounded-lg bg-[#1E293B] border border-slate-700 text-xs font-mono text-white placeholder:text-slate-500 focus:outline-none focus:border-brand-indigo focus:ring-1 focus:ring-brand-indigo transition-all"
                   required
                 />
               </div>
@@ -160,7 +160,7 @@ export function LandingFooter() {
               <div className="flex justify-end">
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-lg bg-white text-[#060B14] hover:bg-white/90 font-semibold text-xs transition-all shadow-md flex items-center gap-1.5 cursor-pointer"
+                  className="px-5 py-2.5 rounded-lg bg-white text-slate-950 hover:bg-slate-200 font-bold text-xs transition-all shadow-md flex items-center gap-1.5 cursor-pointer"
                 >
                   {subscribed ? (
                     <>
@@ -177,10 +177,10 @@ export function LandingFooter() {
 
             {/* Social Links Row */}
             <div className="pt-2">
-              <div className="text-[10px] font-mono uppercase tracking-widest text-white/40 font-bold mb-3">
+              <div className="text-[11px] font-mono uppercase tracking-widest text-slate-400 font-bold mb-3">
                 Follow Us
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2.5">
                 {SOCIAL_LINKS.map((item) => {
                   const IconComponent = item.icon
                   return (
@@ -189,7 +189,7 @@ export function LandingFooter() {
                       href={item.href}
                       aria-label={item.label}
                       title={item.label}
-                      className="w-8 h-8 rounded-lg bg-white/5 hover:bg-brand-indigo/30 border border-white/10 hover:border-brand-indigo/50 text-white/60 hover:text-white flex items-center justify-center transition-all duration-200"
+                      className="w-9 h-9 rounded-lg bg-[#1E293B] hover:bg-brand-indigo border border-slate-700 hover:border-brand-indigo text-slate-300 hover:text-white flex items-center justify-center transition-all duration-200 shadow-sm"
                     >
                       <IconComponent className="w-4 h-4" />
                     </a>
@@ -200,14 +200,14 @@ export function LandingFooter() {
           </div>
         </div>
 
-        {/* Massive Outlined Brand Logo (SVG Stroke Gradient) */}
-        <div className="py-8 lg:py-12 border-b border-white/10 flex items-center justify-center">
-          <svg className="w-full h-auto max-h-[160px] overflow-visible select-none" viewBox="0 0 1000 160" fill="none">
+        {/* Massive Outlined Brand Logo (SVG Gradient Stroke) */}
+        <div className="py-10 lg:py-14 border-b border-slate-800/80 flex items-center justify-center">
+          <svg className="w-full h-auto max-h-[180px] overflow-visible select-none" viewBox="0 0 1000 160" fill="none">
             <defs>
               <linearGradient id="footerBrandOutlineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="var(--color-brand-magenta)" />
-                <stop offset="50%" stopColor="#7c3aed" />
-                <stop offset="100%" stopColor="var(--color-brand-indigo)" />
+                <stop offset="0%" stopColor="#D300EA" />
+                <stop offset="50%" stopColor="#8B5CF6" />
+                <stop offset="100%" stopColor="#3B38D0" />
               </linearGradient>
             </defs>
             <text
@@ -216,9 +216,9 @@ export function LandingFooter() {
               dominantBaseline="central"
               textAnchor="middle"
               stroke="url(#footerBrandOutlineGrad)"
-              strokeWidth="2.2"
+              strokeWidth="3"
               fill="none"
-              className="font-black tracking-tighter uppercase text-[150px] font-sans opacity-30 hover:opacity-70 transition-opacity duration-500"
+              className="font-black tracking-tighter uppercase text-[140px] font-sans opacity-70 hover:opacity-100 transition-opacity duration-300"
             >
               CloudReel
             </text>
@@ -226,16 +226,16 @@ export function LandingFooter() {
         </div>
 
         {/* Bottom Bar: Operational Status & Legal */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-white/40">
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-slate-400">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-white/60">All systems operational</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-sm shadow-emerald-400/50" />
+            <span className="text-slate-300 font-semibold">All systems operational</span>
           </div>
 
-          <div className="flex items-center gap-6 text-white/40">
+          <div className="flex items-center gap-6 text-slate-400">
             <a href="#" className="hover:text-white transition-colors">Privacy policy</a>
             <a href="#" className="hover:text-white transition-colors">Terms of service</a>
-            <span>© 2026 CloudReel</span>
+            <span className="text-slate-500">© 2026 CloudReel</span>
           </div>
         </div>
 
