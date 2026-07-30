@@ -1,80 +1,244 @@
-import { Link } from 'react-router-dom'
-import { useTheme } from '../../components/ThemeProvider'
+import { useState } from 'react'
+import { Instagram, Facebook, Youtube, Linkedin, ArrowRight, Check } from 'lucide-react'
 
-const FOOTER_LINKS = {
-  Platform: [
+const FOOTER_NAV = {
+  Products: [
     { label: 'Capabilities', href: '#landing-capabilities' },
+    { label: 'AI Studio', href: '#landing-multiviewer' },
     { label: 'AI Crew', href: '#landing-crew' },
-    { label: 'How it works', href: '#landing-stack' },
+    { label: 'AI Playout', href: '#landing-mediaos' },
     { label: 'Media OS', href: '#landing-mediaos' },
+    { label: 'Solutions', href: '#landing-audience' },
   ],
-  Solutions: [
-    { label: 'Creators', href: '#landing-audience' },
-    { label: 'Broadcasters', href: '#landing-audience' },
-    { label: 'Enterprise', href: '#landing-benefits' },
-    { label: 'Education', href: '#landing-audience' },
+  Resources: [
+    { label: 'Blog', href: '#' },
+    { label: 'Customer Stories', href: '#' },
+    { label: 'Guides', href: '#' },
+    { label: 'Community', href: '#' },
+    { label: 'Changelog', href: '#' },
+    { label: 'Docs', href: '#' },
+    { label: 'Support', href: '#' },
   ],
   Company: [
-    { label: 'Vision', href: '#landing-vision' },
-    { label: 'Book a demo', href: '#landing-final-cta' },
-    { label: 'Start free trial', href: '#' },
+    { label: 'About', href: '#' },
+    { label: 'Careers', href: '#' },
+    { label: 'Partners', href: '#' },
+    { label: 'Trust Center', href: '#' },
+    { label: 'Book a Demo', href: '#landing-final-cta' },
+    { label: 'Events', href: '#' },
   ],
 }
 
+// Custom X (Twitter) SVG Icon
+function XIcon({ className = 'w-4 h-4' }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
+  )
+}
+
+// Custom Pinterest SVG Icon
+function PinterestIcon({ className = 'w-4 h-4' }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.607 0 11.985-5.365 11.985-11.987C23.97 5.39 18.592.026 11.985.026l.032-.026z" />
+    </svg>
+  )
+}
+
 export function LandingFooter() {
-  const { theme } = useTheme()
-  const logoSrc = theme === 'dark' ? '/CloudReel-white.png' : '/CloudReel.png'
+  const [email, setEmail] = useState('')
+  const [subscribed, setSubscribed] = useState(false)
+
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (email.trim()) {
+      setSubscribed(true)
+      setTimeout(() => setSubscribed(false), 4000)
+      setEmail('')
+    }
+  }
+
+  const SOCIAL_LINKS = [
+    { label: 'Instagram', icon: Instagram, href: '#' },
+    { label: 'Facebook', icon: Facebook, href: '#' },
+    { label: 'YouTube', icon: Youtube, href: '#' },
+    { label: 'LinkedIn', icon: Linkedin, href: '#' },
+    { label: 'X (Twitter)', icon: XIcon, href: '#' },
+    { label: 'Pinterest', icon: PinterestIcon, href: '#' },
+  ]
 
   return (
-    <footer id="landing-footer" className="bg-bg-tint border-t border-line py-16 lg:py-24">
+    <footer id="landing-footer" className="bg-[#060B14] text-white border-t border-white/10 pt-16 lg:pt-24 pb-8 overflow-hidden font-sans">
       <div className="mx-auto max-w-[1180px] px-6 lg:px-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-12 lg:gap-8 mb-16">
-          {/* Brand Col */}
-          <div className="col-span-2 lg:col-span-2 pr-8">
-            <Link to="/" className="inline-flex items-center gap-2 mb-6 outline-none focus-visible:ring-2 focus-visible:ring-brand-indigo rounded-sm">
-              <img src={logoSrc} alt="CloudReel" className="h-7 w-auto" />
-            </Link>
-            
-            <p className="text-muted text-sm leading-relaxed max-w-xs">
-              The AI operating system for live production. <br/>
-              <strong className="text-ink font-semibold">Formerly Janya.</strong>
-            </p>
+        
+        {/* Top 4-Column Navigation & Newsletter Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-10 pb-16 border-b border-white/10">
+          
+          {/* Products Col */}
+          <div>
+            <h4 className="text-sm font-semibold text-white mb-5 tracking-tight">
+              Products
+            </h4>
+            <ul className="space-y-3">
+              {FOOTER_NAV.Products.map((link) => (
+                <li key={link.label}>
+                  <a
+                    href={link.href}
+                    className="text-xs font-mono text-white/50 hover:text-white transition-colors duration-200"
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
 
-          {/* Link Cols */}
-          {Object.entries(FOOTER_LINKS).map(([title, links]) => (
-            <div key={title} id={`landing-footer-col-${title.toLowerCase()}`}>
-              <div className="text-[11px] font-mono tracking-widest uppercase text-ink font-bold mb-6">
-                {title}
-              </div>
-              <ul className="space-y-4">
-                {links.map((link) => (
-                  <li key={link.label}>
-                    <a 
-                      href={link.href}
-                      className="text-sm text-muted hover:text-brand-indigo transition-colors outline-none focus-visible:ring-2 focus-visible:ring-brand-indigo rounded-sm"
-                    >
-                      {link.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+          {/* Resources Col */}
+          <div>
+            <h4 className="text-sm font-semibold text-white mb-5 tracking-tight">
+              Resources
+            </h4>
+            <ul className="space-y-3">
+              {FOOTER_NAV.Resources.map((link) => (
+                <li key={link.label}>
+                  <a
+                    href={link.href}
+                    className="text-xs font-mono text-white/50 hover:text-white transition-colors duration-200"
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Company Col */}
+          <div>
+            <h4 className="text-sm font-semibold text-white mb-5 tracking-tight">
+              Company
+            </h4>
+            <ul className="space-y-3">
+              {FOOTER_NAV.Company.map((link) => (
+                <li key={link.label}>
+                  <a
+                    href={link.href}
+                    className="text-xs font-mono text-white/50 hover:text-white transition-colors duration-200"
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Newsletter & Socials Col */}
+          <div className="space-y-6">
+            <div>
+              <h4 className="text-sm font-semibold text-white mb-2 leading-snug">
+                Sign up for our newsletter to stay up to date
+              </h4>
+              <p className="text-xs font-mono text-white/40">
+                Get the latest CloudReel updates, features, and release notes.
+              </p>
             </div>
-          ))}
+
+            {/* Newsletter Input Form */}
+            <form onSubmit={handleSubscribe} className="space-y-3">
+              <div className="relative">
+                <input
+                  type="email"
+                  placeholder="Your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-lg bg-white/5 border border-white/15 text-xs font-mono text-white placeholder:text-white/30 focus:outline-none focus:border-brand-indigo focus:ring-1 focus:ring-brand-indigo transition-all"
+                  required
+                />
+              </div>
+
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-lg bg-white text-[#060B14] hover:bg-white/90 font-semibold text-xs transition-all shadow-md flex items-center gap-1.5 cursor-pointer"
+                >
+                  {subscribed ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-emerald-600" /> Subscribed!
+                    </>
+                  ) : (
+                    <>
+                      Subscribe <ArrowRight className="w-3.5 h-3.5" />
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+
+            {/* Social Links Row */}
+            <div className="pt-2">
+              <div className="text-[10px] font-mono uppercase tracking-widest text-white/40 font-bold mb-3">
+                Follow Us
+              </div>
+              <div className="flex items-center gap-3">
+                {SOCIAL_LINKS.map((item) => {
+                  const IconComponent = item.icon
+                  return (
+                    <a
+                      key={item.label}
+                      href={item.href}
+                      aria-label={item.label}
+                      title={item.label}
+                      className="w-8 h-8 rounded-lg bg-white/5 hover:bg-brand-indigo/30 border border-white/10 hover:border-brand-indigo/50 text-white/60 hover:text-white flex items-center justify-center transition-all duration-200"
+                    >
+                      <IconComponent className="w-4 h-4" />
+                    </a>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="pt-8 border-t border-line flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="text-xs text-muted font-mono uppercase tracking-wider">
-            © 2026 CloudReel
-          </div>
+        {/* Massive Outlined Brand Logo (SVG Stroke Gradient) */}
+        <div className="py-8 lg:py-12 border-b border-white/10 flex items-center justify-center">
+          <svg className="w-full h-auto max-h-[160px] overflow-visible select-none" viewBox="0 0 1000 160" fill="none">
+            <defs>
+              <linearGradient id="footerBrandOutlineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="var(--color-brand-magenta)" />
+                <stop offset="50%" stopColor="#7c3aed" />
+                <stop offset="100%" stopColor="var(--color-brand-indigo)" />
+              </linearGradient>
+            </defs>
+            <text
+              x="50%"
+              y="50%"
+              dominantBaseline="central"
+              textAnchor="middle"
+              stroke="url(#footerBrandOutlineGrad)"
+              strokeWidth="2.2"
+              fill="none"
+              className="font-black tracking-tighter uppercase text-[150px] font-sans opacity-30 hover:opacity-70 transition-opacity duration-500"
+            >
+              CloudReel
+            </text>
+          </svg>
+        </div>
+
+        {/* Bottom Bar: Operational Status & Legal */}
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-white/40">
           <div className="flex items-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-brand-magenta" />
-            <span className="text-xs text-muted-2 font-mono uppercase tracking-wider">
-              Built for live.
-            </span>
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-white/60">All systems operational</span>
+          </div>
+
+          <div className="flex items-center gap-6 text-white/40">
+            <a href="#" className="hover:text-white transition-colors">Privacy policy</a>
+            <a href="#" className="hover:text-white transition-colors">Terms of service</a>
+            <span>© 2026 CloudReel</span>
           </div>
         </div>
+
       </div>
     </footer>
   )
