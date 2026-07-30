@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { 
-  Radio, Users, MonitorPlay, Layers, BarChart, Mic, Share2, 
-  Sparkles, Activity, CheckCircle2, Zap, Eye, Wifi, ArrowRight
+  Radio, Layers, Sparkles, Activity, Zap, Eye, Wifi, ArrowRight
 } from 'lucide-react'
 import { Eyebrow } from './ui/Eyebrow'
 import { revealContainer, revealItem, viewportOnce } from './motionPresets'

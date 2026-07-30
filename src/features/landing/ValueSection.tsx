@@ -1,7 +1,6 @@
 import { motion } from 'motion/react'
 import { 
-  Volume2, LayoutGrid, Radio, Sparkles, Share2, MessageSquare, 
-  CheckCircle2, Zap, Wifi, Activity, Sliders, Play
+  Volume2, LayoutGrid, Radio, Sparkles, Share2, MessageSquare
 } from 'lucide-react'
 import { Eyebrow } from './ui/Eyebrow'
 import { revealContainer, revealItem, viewportOnce } from './motionPresets'

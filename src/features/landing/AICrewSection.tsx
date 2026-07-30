@@ -10,7 +10,6 @@ import {
   Languages,
 } from 'lucide-react'
 import { Eyebrow } from './ui/Eyebrow'
-import { Card } from './ui/Card'
 import { revealContainer, revealItem, viewportOnce } from './motionPresets'
 
 const CREW = [
