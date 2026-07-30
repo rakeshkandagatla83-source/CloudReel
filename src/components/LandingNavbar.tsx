@@ -1,18 +1,23 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { motion, useReducedMotion } from 'motion/react'
 import { Radio, Menu, X } from 'lucide-react'
 import { cn } from '../lib/utils'
 import { useTheme } from './ThemeProvider'
 import { ThemeToggle } from './ThemeToggle'
 
 const NAV_LINKS = [
-  { label: 'Features', href: '#features' },
-  { label: 'Protocols', href: '#protocols' },
-  { label: 'Demo', href: '#demo' },
+  { label: 'Platform', href: '#capabilities' },
+  { label: 'Use cases', href: '#showcase' },
+  { label: 'AI Crew', href: '#crew' },
+  { label: 'How it works', href: '#stack' },
+  { label: 'Solutions', href: '#audience' },
+  { label: 'Vision', href: '#vision' },
 ]
 
 export function LandingNavbar() {
   const { theme } = useTheme()
+  const reduce = useReducedMotion()
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
 
@@ -25,8 +30,11 @@ export function LandingNavbar() {
   const logoSrc = theme === 'dark' ? '/CloudReel-white.png' : '/CloudReel.png'
 
   return (
-    <header
+    <motion.header
       id="landing-navbar"
+      initial={reduce ? false : { y: -24, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       className={cn(
         'fixed inset-x-0 top-0 z-50 transition-all duration-500',
         scrolled
@@ -35,9 +43,19 @@ export function LandingNavbar() {
       )}
     >
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between gap-8">
+        <div
+          className={cn(
+            'flex items-center justify-between gap-8 transition-[height] duration-500',
+            scrolled ? 'h-14' : 'h-16',
+          )}
+        >
           {/* Brand */}
-          <div id="landing-navbar-brand" className="flex items-center gap-3 shrink-0">
+          <a
+            id="landing-navbar-brand"
+            href="#top"
+            aria-label="CloudReel — home"
+            className="flex items-center gap-3 shrink-0"
+          >
             <img src={logoSrc} alt="CloudReel" className="h-7 w-auto" />
             <div className="hidden sm:flex items-center gap-2 pl-3 border-l border-primary-border">
               <span className="text-[10px] tracking-[0.22em] text-muted-text uppercase font-mono">
@@ -45,17 +63,21 @@ export function LandingNavbar() {
               </span>
               <span className="h-1.5 w-1.5 rounded-full bg-active-accent animate-pulse" />
             </div>
-          </div>
+          </a>
 
           {/* Desktop Nav */}
-          <nav id="landing-navbar-links" className="hidden md:flex items-center gap-0.5 flex-1 justify-center">
+          <nav
+            id="landing-navbar-links"
+            className="hidden md:flex items-center gap-1 flex-1 justify-center"
+          >
             {NAV_LINKS.map(({ label, href }) => (
               <a
                 key={label}
                 href={href}
-                className="px-4 py-2 text-sm text-secondary-text hover:text-primary-text hover:bg-component-bg rounded-lg transition-all duration-200 cursor-pointer"
+                className="group relative px-3 py-2 text-sm text-secondary-text hover:text-primary-text transition-colors duration-200 cursor-pointer"
               >
                 {label}
+                <span className="pointer-events-none absolute inset-x-3 -bottom-0.5 h-px origin-left scale-x-0 bg-linear-to-r from-active-accent to-accent-from transition-transform duration-300 group-hover:scale-x-100" />
               </a>
             ))}
           </nav>
@@ -70,7 +92,7 @@ export function LandingNavbar() {
               Sign In
             </Link>
             <a
-              href="#demo"
+              href="#start"
               className="flex items-center gap-1.5 px-4 py-2 bg-active-accent hover:opacity-90 text-white text-sm font-semibold rounded-lg transition-all cursor-pointer shadow-[0_0_20px_rgba(48,49,203,0.3)] hover:shadow-[0_0_32px_rgba(48,49,203,0.5)]"
             >
               <Radio size={13} />
@@ -79,6 +101,7 @@ export function LandingNavbar() {
             <button
               id="landing-btn-mobile-menu"
               type="button"
+              aria-label="Toggle menu"
               className="md:hidden p-2 text-secondary-text hover:text-primary-text cursor-pointer rounded-lg hover:bg-component-bg"
               onClick={() => setMobileOpen(!mobileOpen)}
             >
@@ -89,7 +112,10 @@ export function LandingNavbar() {
 
         {/* Mobile menu */}
         {mobileOpen && (
-          <div id="landing-navbar-mobile-menu" className="md:hidden border-t border-primary-border py-3 flex flex-col gap-0.5">
+          <div
+            id="landing-navbar-mobile-menu"
+            className="md:hidden border-t border-primary-border py-3 flex flex-col gap-0.5"
+          >
             {NAV_LINKS.map(({ label, href }) => (
               <a
                 key={label}
@@ -110,6 +136,6 @@ export function LandingNavbar() {
           </div>
         )}
       </div>
-    </header>
+    </motion.header>
   )
 }

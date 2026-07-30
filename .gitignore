@@ -33,3 +33,4 @@ graphify-out
 .env.development
 .env.production
 .env.uat
+.vercel

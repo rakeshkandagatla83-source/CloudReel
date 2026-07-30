@@ -45,6 +45,7 @@ code, kbd, pre, samp {
    runtime re-themes every token-based utility without touching markup.
    ────────────────────────────────────────────────────────────────────────── */
 @theme {
+  --color-foobar456:     #2563EB;
   --font-family-sans:    'Roboto', system-ui, -apple-system, sans-serif;
   --font-family-mono:    'Roboto Mono', ui-monospace, monospace;
   --font-family-heading: 'Poppins', system-ui, sans-serif;
@@ -70,6 +71,19 @@ code, kbd, pre, samp {
   --color-accent-from:     #d300ea;
   --color-accent-to:       #3031cb;
 
+  /* Landing Tokens (Light First) */
+  --color-ink:             #0B0D11;
+  --color-muted:           #5B6472;
+  --color-muted-2:         #9AA3AF;
+  --color-bg:              #FFFFFF;
+  --color-bg-tint:         #F7F8FB;
+  --color-line:            #E6E8EE;
+  --color-brand-indigo:    #3B38D0;
+  --color-brand-magenta:   #D300EA;
+  --color-live:            #FF4757;
+  --color-ok:              #10B981;
+  --color-foobar123:       #2563EB;
+
   /* Custom Font Sizes (minimum 14px for sm/xs, 16px for base) */
   --font-size-xs: 0.875rem;   /* 14px (raised from 12px for senior readability) */
   --font-size-sm: 0.875rem;   /* 14px */
@@ -83,6 +97,7 @@ code, kbd, pre, samp {
 
 /* Scrollbar thumb color — themed via token. */
 :root {
+  --outside-theme-test: #999888;
   --scrollbar-thumb: rgba(0, 0, 0, 0.18);
   --scrollbar-thumb-hover: rgba(0, 0, 0, 0.28);
 }
@@ -107,6 +122,15 @@ code, kbd, pre, samp {
   --color-select-accent:   #3031cb;
   --color-accent-from:     #d300ea;
   --color-accent-to:       #3031cb;
+
+  /* Landing Tokens (Dark Overrides) */
+  --color-ink:             #FFFFFF;
+  --color-muted:           #9AA3AF;
+  --color-muted-2:         #6B7280;
+  --color-bg:              #0B0D11;
+  --color-bg-tint:         #111827;
+  --color-line:            #1F2937;
+  --color-grid-line:       rgba(255,255,255,0.04);
 
   --scrollbar-thumb: rgba(255, 255, 255, 0.18);
   --scrollbar-thumb-hover: rgba(255, 255, 255, 0.30);
@@ -538,4 +562,15 @@ input[type="date"]:focus {
 }
 .text-xs {
   font-size: 14px !important;
+}
+
+/* New Brand Gradient from spec */
+.bg-brand-grad {
+  background-image: linear-gradient(105deg, var(--color-brand-magenta), #6d28d9, var(--color-brand-indigo));
+}
+.text-brand-grad {
+  background-image: linear-gradient(105deg, var(--color-brand-magenta), #6d28d9, var(--color-brand-indigo));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }

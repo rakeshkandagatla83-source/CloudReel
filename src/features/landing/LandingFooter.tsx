@@ -1,115 +1,79 @@
 import { Link } from 'react-router-dom'
 import { useTheme } from '../../components/ThemeProvider'
 
+const FOOTER_LINKS = {
+  Platform: [
+    { label: 'Capabilities', href: '#landing-capabilities' },
+    { label: 'AI Crew', href: '#landing-crew' },
+    { label: 'How it works', href: '#landing-stack' },
+    { label: 'Media OS', href: '#landing-mediaos' },
+  ],
+  Solutions: [
+    { label: 'Creators', href: '#landing-audience' },
+    { label: 'Broadcasters', href: '#landing-audience' },
+    { label: 'Enterprise', href: '#landing-benefits' },
+    { label: 'Education', href: '#landing-audience' },
+  ],
+  Company: [
+    { label: 'Vision', href: '#landing-vision' },
+    { label: 'Book a demo', href: '#landing-final-cta' },
+    { label: 'Start free trial', href: '#' },
+  ],
+}
+
 export function LandingFooter() {
   const { theme } = useTheme()
   const logoSrc = theme === 'dark' ? '/CloudReel-white.png' : '/CloudReel.png'
 
   return (
-    <footer id="landing-footer" className="bg-secondary-bg border-t border-primary-border pt-16 pb-10">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="flex flex-col lg:flex-row justify-between gap-12 mb-12">
-          {/* Brand */}
-          <div className="flex flex-col gap-4 max-w-xs">
-            <img src={logoSrc} alt="CloudReel" className="h-7 w-auto self-start object-contain" />
-            <p className="text-base text-secondary-text leading-relaxed">
-              Enterprise live video production infrastructure, delivered entirely on cloud. Create.
-              Produce. Broadcast — at any scale.
+    <footer id="landing-footer" className="bg-bg-tint border-t border-line py-16 lg:py-24">
+      <div className="mx-auto max-w-[1180px] px-6 lg:px-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-12 lg:gap-8 mb-16">
+          {/* Brand Col */}
+          <div className="col-span-2 lg:col-span-2 pr-8">
+            <Link to="/" className="inline-flex items-center gap-2 mb-6 outline-none focus-visible:ring-2 focus-visible:ring-brand-indigo rounded-sm">
+              <img src={logoSrc} alt="CloudReel" className="h-7 w-auto" />
+            </Link>
+            
+            <p className="text-muted text-sm leading-relaxed max-w-xs">
+              The AI operating system for live production. <br/>
+              <strong className="text-ink font-semibold">Formerly Janya.</strong>
             </p>
-            <div className="flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-active-accent animate-pulse" />
-              <span className="text-sm text-muted-text tracking-[0.2em] uppercase font-mono">
-                Cloud Producer v4.0
-              </span>
-            </div>
           </div>
 
-          {/* Links */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-10">
-            <div>
-              <div className="text-sm tracking-[0.22em] text-muted-text uppercase mb-4 font-semibold font-mono">
-                Platform
+          {/* Link Cols */}
+          {Object.entries(FOOTER_LINKS).map(([title, links]) => (
+            <div key={title} id={`landing-footer-col-${title.toLowerCase()}`}>
+              <div className="text-[11px] font-mono tracking-widest uppercase text-ink font-bold mb-6">
+                {title}
               </div>
-              <div className="flex flex-col gap-2.5">
-                {[
-                  { label: 'Features', href: '#features' },
-                  { label: 'Protocols', href: '#protocols' },
-                  { label: 'Studio', href: '#studio' },
-                  { label: 'Demo', href: '#demo' },
-                ].map(({ label, href }) => (
-                  <a
-                    key={label}
-                    href={href}
-                    className="text-base text-secondary-text hover:text-primary-text transition-colors cursor-pointer"
-                  >
-                    {label}
-                  </a>
+              <ul className="space-y-4">
+                {links.map((link) => (
+                  <li key={link.label}>
+                    <a 
+                      href={link.href}
+                      className="text-sm text-muted hover:text-brand-indigo transition-colors outline-none focus-visible:ring-2 focus-visible:ring-brand-indigo rounded-sm"
+                    >
+                      {link.label}
+                    </a>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
-
-            <div>
-              <div className="text-sm tracking-[0.22em] text-muted-text uppercase mb-4 font-semibold font-mono">
-                Company
-              </div>
-              <div className="flex flex-col gap-2.5">
-                {[
-                  { label: 'About Janya', href: 'https://www.janya.video' },
-                  { label: 'Contact Sales', href: 'mailto:sales@janya.video' },
-                  { label: 'Support', href: 'mailto:support@janya.video' },
-                ].map(({ label, href }) => (
-                  <a
-                    key={label}
-                    href={href}
-                    target={href.startsWith('http') ? '_blank' : undefined}
-                    className="text-base text-secondary-text hover:text-primary-text transition-colors cursor-pointer"
-                  >
-                    {label}
-                  </a>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <div className="text-sm tracking-[0.22em] text-muted-text uppercase mb-4 font-semibold font-mono">
-                Legal
-              </div>
-              <div className="flex flex-col gap-2.5">
-                {[
-                  {
-                    label: 'Privacy Policy',
-                    href: 'https://studio.janya.video/privacy-policy',
-                  },
-                  {
-                    label: 'Terms & Conditions',
-                    href: 'https://studio.janya.video/terms-and-conditions',
-                  },
-                ].map(({ label, href }) => (
-                  <a
-                    key={label}
-                    href={href}
-                    target="_blank"
-                    className="text-base text-secondary-text hover:text-primary-text transition-colors cursor-pointer"
-                  >
-                    {label}
-                  </a>
-                ))}
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
 
-        {/* Bottom bar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-primary-border">
-          <p className="text-sm text-muted-text font-mono">
-            © 2026 CloudReel. All rights reserved.
-          </p>
-          <Link
-            to="/login"
-            className="text-sm text-active-accent hover:opacity-80 transition-opacity cursor-pointer font-medium"
-          >
-            Sign in to CloudReel →
-          </Link>
+        {/* Bottom Bar */}
+        <div className="pt-8 border-t border-line flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="text-xs text-muted font-mono uppercase tracking-wider">
+            © 2026 CloudReel
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-brand-magenta" />
+            <span className="text-xs text-muted-2 font-mono uppercase tracking-wider">
+              Built for live.
+            </span>
+          </div>
         </div>
       </div>
     </footer>
