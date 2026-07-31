@@ -254,7 +254,7 @@ function BroadcastMockup({ reduce }: { reduce: boolean }) {
       />
 
       {/* Main control panel */}
-      <div className="relative rounded-2xl border border-white/10 bg-[#0a1020]/95 backdrop-blur-sm overflow-hidden shadow-[0_8px_28px_rgba(0,0,0,0.08)]">
+      <div className="relative rounded-2xl border border-white/10 bg-[#0a1020]/95 backdrop-blur-sm overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.45),0_0_40px_rgba(59,56,208,0.18)]">
         {/* Title bar */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-white/6 bg-[#060b14]/60">
           <div className="flex items-center gap-2.5">

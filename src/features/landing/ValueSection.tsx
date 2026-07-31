@@ -149,9 +149,9 @@ export function ValueSection() {
                 <span>DYNAMIC GRAPHICS OVERLAY</span>
               </div>
             </div>
-            <div className="bg-brand-grad p-3 rounded-xl text-white shadow-md">
-              <div className="font-bold text-xs uppercase tracking-wider">LIVE INTERVIEW</div>
-              <div className="text-[11px] text-white/80 font-mono truncate">Sarah Chen • Lead Media Architect</div>
+            <div className="bg-brand-grad p-3 rounded-xl !text-white shadow-md">
+              <div className="font-bold text-xs uppercase tracking-wider !text-white">LIVE INTERVIEW</div>
+              <div className="text-[11px] !text-white font-medium font-mono truncate">Sarah Chen • Lead Media Architect</div>
             </div>
           </motion.div>
 
